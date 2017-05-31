@@ -16,7 +16,7 @@ import org.apache.hadoop.hbase.io.compress.Compression.Algorithm;
 
 /**
  * @author Ronald Macmaster
- * TODO document
+ * HBase starter class.
  */
 public class Example {
 	
