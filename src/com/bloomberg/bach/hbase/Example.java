@@ -1,4 +1,4 @@
-package distributed;
+package com.bloomberg.bach.hbase;
 
 import java.io.IOException;
 
@@ -23,16 +23,16 @@ public class Example {
 	private static final String TABLE_NAME = "ronny_table";
 	private static final String CF_DEFAULT = "ronny_family";
 	
-	public static void main(String[] args) throws IOException {
-	    Configuration config = HBaseConfiguration.create();
-
-	    //Add any necessary configuration files (hbase-site.xml, core-site.xml)
-	    config.addResource(new Path("/home/hadoop/hbase-1.3.1/conf", "hbase-site.xml"));
-	    config.addResource(new Path("/home/hadoop/hadoop-2.8.0/etc/hadoop", "core-site.xml"));
-	    createSchemaTables(config);
-	    modifySchema(config);
-		
-	}
+//	public static void main(String[] args) throws IOException {
+//	    Configuration config = HBaseConfiguration.create();
+//
+//	    //Add any necessary configuration files (hbase-site.xml, core-site.xml)
+//	    config.addResource(new Path("/home/hadoop/hbase-1.3.1/conf", "hbase-site.xml"));
+//	    config.addResource(new Path("/home/hadoop/hadoop-2.8.0/etc/hadoop", "core-site.xml"));
+//	    createSchemaTables(config);
+//	    modifySchema(config);
+//		
+//	}
 	
 	public static void createOrOverwrite(Admin admin, HTableDescriptor table) throws IOException {
 		if (admin.tableExists(table.getTableName())) {
