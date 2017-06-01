@@ -1,2 +1,2 @@
 # distributed
-Starter Projects for Hadoop and HBase
+Starter Project for Hadoop and HBase.
