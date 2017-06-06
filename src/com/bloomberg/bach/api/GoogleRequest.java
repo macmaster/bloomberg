@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import org.apache.http.HttpHost;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.fluent.Request;
 
 /**
  * @author Ronald Macmaster
