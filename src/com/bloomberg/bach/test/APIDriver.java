@@ -5,14 +5,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.Map;
+import java.util.Arrays;
 
-import javax.management.MalformedObjectNameException;
-
-import org.jolokia.client.J4pClient;
-import org.jolokia.client.exception.J4pException;
-import org.jolokia.client.request.J4pReadRequest;
-import org.jolokia.client.request.J4pReadResponse;
+import org.apache.hadoop.hbase.client.metrics.ScanMetrics;
 import org.json.JSONObject;
 import org.junit.Test;
 
@@ -31,32 +26,16 @@ public class APIDriver {
 	
 	public static void main(String[] args) throws IOException {
 		APIDriver driver = new APIDriver();
-		for (String filename : new String[] {
-				"texas.txt", "hawaii.txt", "new_york.txt", "wyoming.txt"
-		}) {
-			driver.filename = "input/" + filename;
-			driver.testLocationTablePut();
-		}
+		driver.testScan();
+		//		for (String filename : new String[] {
+		//				"texas.txt", "hawaii.txt", "new_york.txt", "wyoming.txt"
+		//		}) {
+		//			driver.filename = "input/" + filename;
+		//			driver.testLocationTablePut();
+		//		}
+		//		
+		//		driver.testLocationTableGet();
 		
-		driver.testLocationTableGet();
-		
-		//		new Thread(() -> {
-		//			try { // collect a jolokia stat
-		//				J4pClient j4pClient = new J4pClient("http://localhost:8080/jolokia");
-		//				J4pReadRequest req = new J4pReadRequest("java.lang:type=Memory", "HeapMemoryUsage");
-		//				for (int i = 0; i < 50; i++) {
-		//					J4pReadResponse resp = j4pClient.execute(req);
-		//					Map<String, Long> vals = resp.getValue();
-		//					long used = vals.get("used");
-		//					long max = vals.get("max");
-		//					int usage = (int) (used * 100 / max);
-		//					System.out.println("Memory usage: used: " + used + " / max: " + max + " = " + usage + "%");
-		//					Thread.sleep(500);
-		//				}
-		//			} catch (Exception e) {
-		//				e.printStackTrace();
-		//			}
-		//		}).start();
 	}
 	
 	@Test
@@ -127,6 +106,23 @@ public class APIDriver {
 			exception.printStackTrace();
 		}
 		
+	}
+	
+	@Test
+	public void testScan() throws IOException {
+		try (LocationTable table = new LocationTable();) {
+			// print scan metrics.
+			ScanMetrics metrics = table.scan();
+			System.out.format("regions: %d%n", metrics.countOfRegions.get());
+			System.out.format("rpc calls: %d%n", metrics.countOfRemoteRPCcalls.get());
+			System.out.print("\n");
+			
+			System.out.println("Metrics Map: ");
+			System.out.println(Arrays.toString(metrics.getMetricsMap().entrySet().toArray()));
+			
+		} catch (Exception exception) {
+			exception.printStackTrace();
+		}
 	}
 	
 	@Test

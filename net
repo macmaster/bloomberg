@@ -1,0 +1,91 @@
+  *-network:0
+       description: Ethernet interface
+       product: NetXtreme BCM5719 Gigabit Ethernet PCIe
+       vendor: Broadcom Corporation
+       physical id: 0
+       bus info: pci@0000:03:00.0
+       logical name: eno1
+       version: 01
+       serial: 40:a8:f0:2f:97:6c
+       size: 1Gbit/s
+       capacity: 1Gbit/s
+       width: 64 bits
+       clock: 33MHz
+       capabilities: pm vpd msi msix pciexpress bus_master cap_list rom ethernet physical tp 10bt 10bt-fd 100bt 100bt-fd 1000bt 1000bt-fd autonegotiation
+       configuration: autonegotiation=on broadcast=yes driver=tg3 driverversion=3.137 duplex=full firmware=5719-v1.45 NCSI v1.3.12.0 ip=100.83.17.12 latency=0 link=yes multicast=yes port=twisted pair speed=1Gbit/s
+       resources: irq:26 memory:f2bf0000-f2bfffff memory:f2be0000-f2beffff memory:f2bd0000-f2bdffff memory:f0000000-f003ffff
+  *-network:1 DISABLED
+       description: Ethernet interface
+       product: NetXtreme BCM5719 Gigabit Ethernet PCIe
+       vendor: Broadcom Corporation
+       physical id: 0.1
+       bus info: pci@0000:03:00.1
+       logical name: eno2
+       version: 01
+       serial: 40:a8:f0:2f:97:6d
+       capacity: 1Gbit/s
+       width: 64 bits
+       clock: 33MHz
+       capabilities: pm vpd msi msix pciexpress bus_master cap_list rom ethernet physical tp 10bt 10bt-fd 100bt 100bt-fd 1000bt 1000bt-fd autonegotiation
+       configuration: autonegotiation=on broadcast=yes driver=tg3 driverversion=3.137 firmware=5719-v1.45 NCSI v1.3.12.0 latency=0 link=no multicast=yes port=twisted pair
+       resources: irq:132 memory:f2bc0000-f2bcffff memory:f2bb0000-f2bbffff memory:f2ba0000-f2baffff memory:f0040000-f007ffff
+  *-network:2 DISABLED
+       description: Ethernet interface
+       product: NetXtreme BCM5719 Gigabit Ethernet PCIe
+       vendor: Broadcom Corporation
+       physical id: 0.2
+       bus info: pci@0000:03:00.2
+       logical name: eno3
+       version: 01
+       serial: 40:a8:f0:2f:97:6e
+       capacity: 1Gbit/s
+       width: 64 bits
+       clock: 33MHz
+       capabilities: pm vpd msi msix pciexpress bus_master cap_list rom ethernet physical tp 10bt 10bt-fd 100bt 100bt-fd 1000bt 1000bt-fd autonegotiation
+       configuration: autonegotiation=on broadcast=yes driver=tg3 driverversion=3.137 firmware=5719-v1.45 NCSI v1.3.12.0 latency=0 link=no multicast=yes port=twisted pair
+       resources: irq:26 memory:f2b90000-f2b9ffff memory:f2b80000-f2b8ffff memory:f2b70000-f2b7ffff memory:f0080000-f00bffff
+  *-network:3 DISABLED
+       description: Ethernet interface
+       product: NetXtreme BCM5719 Gigabit Ethernet PCIe
+       vendor: Broadcom Corporation
+       physical id: 0.3
+       bus info: pci@0000:03:00.3
+       logical name: eno4
+       version: 01
+       serial: 40:a8:f0:2f:97:6f
+       capacity: 1Gbit/s
+       width: 64 bits
+       clock: 33MHz
+       capabilities: pm vpd msi msix pciexpress bus_master cap_list rom ethernet physical tp 10bt 10bt-fd 100bt 100bt-fd 1000bt 1000bt-fd autonegotiation
+       configuration: autonegotiation=on broadcast=yes driver=tg3 driverversion=3.137 firmware=5719-v1.45 NCSI v1.3.12.0 latency=0 link=no multicast=yes port=twisted pair
+       resources: irq:132 memory:f2b60000-f2b6ffff memory:f2b50000-f2b5ffff memory:f2b40000-f2b4ffff memory:f00c0000-f00fffff
+  *-network:0 DISABLED
+       description: Ethernet interface
+       product: SFC9020 [Solarstorm]
+       vendor: Solarflare Communications
+       physical id: 0
+       bus info: pci@0000:04:00.0
+       logical name: ens1f0
+       version: 00
+       serial: a0:48:1c:b9:ef:40
+       size: 10Gbit/s
+       width: 64 bits
+       clock: 33MHz
+       capabilities: pm msi pciexpress msix vpd bus_master cap_list rom ethernet physical fibre
+       configuration: autonegotiation=off broadcast=yes driver=sfc driverversion=4.0 duplex=full firmware=3.3.0.6298 latency=0 link=no multicast=yes port=fibre speed=10Gbit/s
+       resources: irq:111 ioport:6000(size=256) memory:f6000000-f6ffffff memory:f5ff0000-f5ffffff memory:f3f00000-f3f1ffff
+  *-network:1 DISABLED
+       description: Ethernet interface
+       product: SFC9020 [Solarstorm]
+       vendor: Solarflare Communications
+       physical id: 0.1
+       bus info: pci@0000:04:00.1
+       logical name: ens1f1
+       version: 00
+       serial: a0:48:1c:b9:ef:41
+       size: 10Gbit/s
+       width: 64 bits
+       clock: 33MHz
+       capabilities: pm msi pciexpress msix vpd bus_master cap_list rom ethernet physical fibre
+       configuration: autonegotiation=off broadcast=yes driver=sfc driverversion=4.0 duplex=full firmware=3.3.0.6298 latency=0 link=no multicast=yes port=fibre speed=10Gbit/s
+       resources: irq:133 ioport:6400(size=256) memory:f4000000-f4ffffff memory:f3ff0000-f3ffffff memory:f3f20000-f3f3ffff

@@ -12,7 +12,10 @@ import org.apache.hadoop.hbase.client.ConnectionFactory;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.client.ResultScanner;
+import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.client.Table;
+import org.apache.hadoop.hbase.client.metrics.ScanMetrics;
 import org.apache.hadoop.hbase.util.Bytes;
 
 /**
@@ -78,6 +81,23 @@ public class LocationTable implements Closeable {
 		
 		return Location.parseLocation(locationString);
 		
+	}
+	
+	/**
+	 * performs a scan of the Location table. <br>
+	 * @return 
+	 */
+	public ScanMetrics scan() throws IOException {
+		Scan scan = new Scan().setScanMetricsEnabled(true);
+		ResultScanner scanner = table.getScanner(scan);
+		for (Result result : scanner) {
+			System.out.println(result);
+		}
+		scanner.close();
+		System.out.print("\n");
+		
+		// print scan metrics.
+		return scan.getScanMetrics();
 	}
 	
 	/**
