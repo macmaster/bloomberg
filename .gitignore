@@ -1,0 +1,6 @@
+/bin/
+/target/
+/input
+.settings
+.classpath
+.project
