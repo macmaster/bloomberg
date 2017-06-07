@@ -20,3 +20,6 @@ Luiz Andre Barroso, Jeffrey Dean, and Urs Holzle
 Jeffery Dean  
 [https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/32721.pdf]  
 
+5) The Anatomy of a Large-Scale Hypertextual Web Search Engine (1998):  
+Sergey Brin and Lawrence Page  
+[https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/334.pdf]
