@@ -73,7 +73,7 @@ public class LocationTable implements Closeable {
 				Bytes.toString(result.getValue(Bytes.toBytes("name"), Bytes.toBytes("region"))), //
 				Bytes.toString(result.getValue(Bytes.toBytes("meta"), Bytes.toBytes("population"))), //
 				Bytes.toString(result.getValue(Bytes.toBytes("meta"), Bytes.toBytes("longitude"))), //
-				Bytes.toString(result.getValue(Bytes.toBytes("meta"), Bytes.toBytes("latitude"))) //
+				Bytes.toString(result.getValue(Bytes.toBytes("meta"), Bytes.toBytes("latitude"))) //	
 		);
 		
 		return Location.parseLocation(locationString);

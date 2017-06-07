@@ -1,7 +1,7 @@
 # hadoop
 Starter Project for Hadoop and HBase.
 
-# reading List
+# reading list
 very important things to read.
 
 1) The Google File System (2003):  
@@ -16,4 +16,7 @@ Jeffrey Dean and Sanjay Ghemawat
 Luiz Andre Barroso, Jeffrey Dean, and Urs Holzle  
 [https://static.googleusercontent.com/media/research.google.com/en//archive/googlecluster-ieee.pdf]  
 
+4) Experiences with MapReduce, an Abstraction for Large-Scale Computation (2006):  
+Jeffery Dean  
+[https://static.googleusercontent.com/media/research.google.com/en//pubs/archive/32721.pdf]  
 

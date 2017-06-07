@@ -38,7 +38,7 @@ public class APIDriver {
 			driver.testLocationTablePut();
 		}
 		
-		// driver.testLocationTableGet();
+		driver.testLocationTableGet();
 		
 		//		new Thread(() -> {
 		//			try { // collect a jolokia stat
