@@ -16,7 +16,6 @@ public class LocationComponentSink implements MetricsSink {
 	@Override
 	public void init(SubsetConfiguration conf) {
 		// TODO Auto-generated method stub
-		
 	}
 	
 	/* (non-Javadoc)
@@ -25,7 +24,6 @@ public class LocationComponentSink implements MetricsSink {
 	@Override
 	public void flush() {
 		// TODO Auto-generated method stub
-		
 	}
 	
 	/* (non-Javadoc)
@@ -33,8 +31,7 @@ public class LocationComponentSink implements MetricsSink {
 	 */
 	@Override
 	public void putMetrics(MetricsRecord record) {
-		// TODO Auto-generated method stub
-		
+		System.out.println(record);
 	}
 	
 }

@@ -12,6 +12,7 @@ import org.json.JSONObject;
 import org.junit.Test;
 
 import com.bloomberg.bach.api.ElevationRequest;
+import com.bloomberg.bach.context.BachMetricsContext;
 import com.bloomberg.bach.hbase.Location;
 import com.bloomberg.bach.hbase.LocationTable;
 import com.bloomberg.bach.hdfs.HDFSFile;
@@ -25,16 +26,17 @@ public class APIDriver {
 	public String filename = "input/texas.txt";
 	
 	public static void main(String[] args) throws IOException {
+		BachMetricsContext.start();
 		APIDriver driver = new APIDriver();
-		driver.testScan();
-		//		for (String filename : new String[] {
-		//				"texas.txt", "hawaii.txt", "new_york.txt", "wyoming.txt"
-		//		}) {
-		//			driver.filename = "input/" + filename;
-		//			driver.testLocationTablePut();
-		//		}
-		//		
-		//		driver.testLocationTableGet();
+		// driver.testScan();
+		
+		
+		for (String filename : new String[] { "texas.txt", "hawaii.txt", "new_york.txt", "wyoming.txt" }) {
+			driver.filename = "input/" + filename;
+			driver.testLocationTablePut();
+		}
+		
+		driver.testLocationTableGet();
 		
 	}
 	

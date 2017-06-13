@@ -10,6 +10,7 @@ import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.ConnectionFactory;
 import org.apache.hadoop.hbase.client.Get;
+import org.apache.hadoop.hbase.client.MetricsConnection;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
@@ -33,6 +34,7 @@ public class LocationTable implements Closeable {
 	private Table table;
 	private Connection conn;
 	private Configuration config;
+	private MetricsConnection metrics;
 	
 	/**
 	 * Constructs a new LocationTable. 
@@ -106,6 +108,7 @@ public class LocationTable implements Closeable {
 	 */
 	private void open() throws IOException {
 		conn = ConnectionFactory.createConnection(config);
+		metrics = new MetricsConnection(conn);
 		table = conn.getTable(TABLE_NAME);
 	}
 	

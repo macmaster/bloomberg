@@ -8,6 +8,20 @@ import org.apache.hadoop.metrics2.MetricsInfo;
  */
 public class LocationMetrics implements MetricsInfo {
 	
+	public static void main(String[] args) throws Exception {
+		//		J4pClient j4pClient = new J4pClient("http://localhost:8778/jolokia");
+		//		J4pReadRequest req = new J4pReadRequest("java.lang:type=Memory", "HeapMemoryUsage");
+		//		J4pReadResponse resp = j4pClient.execute(req);
+		//		Map<String, Long> vals = resp.getValue();
+		//		long used = vals.get("used");
+		//		long max = vals.get("max");
+		//		int usage = (int) (used * 100 / max);
+		//		for (int idx = 0;; ++idx) {
+		//			System.out.println("Memory usage: used: " + used + " / max: " + max + " = " + usage + "%");
+		//			Thread.sleep(500);
+		//		}
+	}
+	
 	private String name, description;
 	
 	/**
