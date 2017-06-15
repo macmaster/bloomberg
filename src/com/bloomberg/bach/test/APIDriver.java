@@ -9,6 +9,8 @@ import java.util.Arrays;
 
 import org.apache.hadoop.hbase.client.metrics.ScanMetrics;
 import org.json.JSONObject;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.bloomberg.bach.api.ElevationRequest;
@@ -25,19 +27,65 @@ public class APIDriver {
 	
 	public String filename = "input/texas.txt";
 	
-	public static void main(String[] args) throws IOException {
-		BachMetricsContext.start();
+	public static void main(String[] args) throws Exception {
 		APIDriver driver = new APIDriver();
-		// driver.testScan();
-		
-		
+		driver.populate();
+	}
+	
+	public void populate() throws IOException {
+		BachMetricsContext.start();
 		for (String filename : new String[] { "texas.txt", "hawaii.txt", "new_york.txt", "wyoming.txt" }) {
-			driver.filename = "input/" + filename;
-			driver.testLocationTablePut();
+			this.filename = "input/" + filename;
+			testLocationTablePut();
 		}
-		
-		driver.testLocationTableGet();
-		
+		// testScan();
+		testLocationTableGet();
+	}
+	
+	@Test
+	public void testMetrics() throws Exception {
+		// record locationStrings in HBase Location table.
+		LocationTable metricsTable = new LocationTable();
+		for (String filename : new String[] { "texas.txt", "hawaii.txt", "new_york.txt", "wyoming.txt", "hawaii.txt" }) {
+			filename = "input/" + filename;
+			try (FileReader file = new FileReader(filename);
+				BufferedReader reader = new BufferedReader(file);) {
+				
+				String locationString = "";
+				while ((locationString = reader.readLine()) != null) {
+					Location location = Location.parseLocation(locationString);
+					metricsTable.putLocation(location);
+				}
+				
+			} catch (Exception exception) {
+				exception.printStackTrace();
+			}
+			
+			metricsTable.scan();
+			try (InputStreamReader stream = new InputStreamReader(System.in);
+				BufferedReader reader = new BufferedReader(stream);) {
+				System.out.println("/*** Location Table Shell ***/");
+				// command loop.
+				String query = "";
+				System.out.print("> ");
+				while ((query = reader.readLine()) != null) {
+					switch (query) {
+						case "exit":
+						case "quit":
+							System.exit(0);
+							metricsTable.close();
+						default:
+							System.out.println(new JSONObject(metricsTable.getLocation(query)).toString(2));
+					}
+					System.out.print("> ");
+				}
+			} catch (Exception exception) {
+				exception.printStackTrace();
+			} finally {
+				metricsTable.close();
+			}
+			
+		}
 	}
 	
 	@Test

@@ -10,7 +10,6 @@ import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.ConnectionFactory;
 import org.apache.hadoop.hbase.client.Get;
-import org.apache.hadoop.hbase.client.MetricsConnection;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
@@ -25,6 +24,8 @@ import org.apache.hadoop.hbase.util.Bytes;
  */
 public class LocationTable implements Closeable {
 	
+	public static boolean AUTO_FLUSH = true;
+	
 	// configuration files.
 	public static final Path HBASE_CONF = new Path("/home/hadoop/hbase-1.3.1/conf", "hbase-site.xml");
 	public static final Path HADOOP_CONF = new Path("/home/hadoop/hadoop-2.8.0/etc/hadoop", "core-site.xml");
@@ -34,7 +35,6 @@ public class LocationTable implements Closeable {
 	private Table table;
 	private Connection conn;
 	private Configuration config;
-	private MetricsConnection metrics;
 	
 	/**
 	 * Constructs a new LocationTable. 
@@ -62,6 +62,7 @@ public class LocationTable implements Closeable {
 		put.addColumn(Bytes.toBytes("meta"), Bytes.toBytes("longitude"), Bytes.toBytes(location.getLongitude()));
 		put.addColumn(Bytes.toBytes("meta"), Bytes.toBytes("latitude"), Bytes.toBytes(location.getLatitude()));
 		table.put(put);
+		
 	}
 	
 	/**
@@ -107,8 +108,8 @@ public class LocationTable implements Closeable {
 	 * @throws IOException 
 	 */
 	private void open() throws IOException {
+		config.setBoolean("hbase.client.metrics.enable", true);
 		conn = ConnectionFactory.createConnection(config);
-		metrics = new MetricsConnection(conn);
 		table = conn.getTable(TABLE_NAME);
 	}
 	
