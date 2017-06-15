@@ -1,6 +1,10 @@
 # hadoop
 Starter Project for Hadoop and HBase.
 
+# projects
+* jmx-client: client for accessing HBase / HDFS and exporting RESTful JSON jmx metrics.
+* mapreduce: a standard mapreduce job. first one I have done properly...
+
 # reading list
 very important things to read.
 
