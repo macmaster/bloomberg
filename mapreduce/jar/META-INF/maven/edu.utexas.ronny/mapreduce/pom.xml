@@ -1,0 +1,90 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>edu.utexas.ronny</groupId>
+	<artifactId>mapreduce</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>mapreduce</name>
+	<description>ronny's first proper mapreduce job.</description>
+
+	<developers>
+		<developer>
+			<name>Ronald Macmaster</name>
+			<organization>edu.utexas.ece</organization>
+			<email>ronnymacmaster@gmail.com</email>
+		</developer>
+	</developers>
+
+	<properties>
+		<hadoop.version>2.8.0</hadoop.version>
+		<local.repo>file:///home/maven</local.repo>
+	</properties>
+
+	<distributionManagement>
+		<repository>
+			<id>local-release</id>
+			<name>local-release</name>
+			<url>${local.repo}</url>
+		</repository>
+		<snapshotRepository>
+			<id>local-snapshot</id>
+			<name>local-snapshot</name>
+			<url>${local.repo}</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<build>
+		<sourceDirectory>src</sourceDirectory>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.5.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+					<downloadSources>true</downloadSources>
+					<downloadJavadocs>true</downloadJavadocs>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+
+		<!-- hadoop dependencies -->
+		<dependency>
+			<groupId>org.apache.hadoop</groupId>
+			<artifactId>hadoop-common</artifactId>
+			<version>${hadoop.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.hadoop</groupId>
+			<artifactId>hadoop-client</artifactId>
+			<version>${hadoop.version}</version>
+		</dependency>
+
+		<!-- testing dependencies -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.mrunit</groupId>
+			<artifactId>mrunit</artifactId>
+			<version>1.1.0</version>
+			<classifier>hadoop2</classifier>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.hadoop</groupId>
+			<artifactId>hadoop-minicluster</artifactId>
+			<version>${hadoop.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+
+</project>
