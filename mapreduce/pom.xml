@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>edu.utexas.ronny</groupId>
 	<artifactId>mapreduce</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.1</version>
 	<name>mapreduce</name>
 	<description>ronny's first proper mapreduce job.</description>
 
