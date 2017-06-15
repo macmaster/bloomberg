@@ -35,6 +35,7 @@
 
 	<build>
 		<sourceDirectory>src</sourceDirectory>
+		<testSourceDirectory>src/test</testSourceDirectory>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -44,6 +45,9 @@
 					<target>1.8</target>
 					<downloadSources>true</downloadSources>
 					<downloadJavadocs>true</downloadJavadocs>
+					<excludes>
+						<exclude>**/test/**/*.java</exclude>
+					</excludes>
 				</configuration>
 			</plugin>
 		</plugins>
