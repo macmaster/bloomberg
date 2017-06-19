@@ -1,7 +1,5 @@
 package com.bloomberg.bach.test;
 
-import java.util.Map.Entry;
-
 import org.apache.hadoop.metrics2.MetricsSystem;
 import org.apache.hadoop.metrics2.lib.DefaultMetricsSystem;
 
@@ -22,14 +20,9 @@ public class Driver {
 		BachMetricsContext.registerContext(system);
 		system.start();
 		
-		for (Entry<String, String> entry : System.getenv().entrySet()) {
-			String.format("%s : %s%n", entry.getKey(), entry.getValue());
-		}
-		
+		System.getProperties().list(System.out);
 		while (true) {
 		}
 	}
-	
-	
 	
 }

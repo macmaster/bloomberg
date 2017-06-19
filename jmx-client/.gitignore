@@ -1,6 +1,7 @@
 /bin/
 /target/
 /input/
-/.settings
-/.classpath
-/.project
+.gitignore
+.settings
+.classpath
+.project

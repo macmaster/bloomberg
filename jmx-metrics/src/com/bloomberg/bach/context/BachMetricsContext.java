@@ -6,10 +6,8 @@ import java.net.ServerSocket;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.configuration.SubsetConfiguration;
 import org.apache.hadoop.metrics2.MetricsSystem;
 import org.apache.hadoop.metrics2.lib.DefaultMetricsSystem;
-import org.apache.hadoop.metrics2.sink.GraphiteSink;
 import org.jolokia.jvmagent.JolokiaServer;
 import org.jolokia.jvmagent.JolokiaServerConfig;
 
@@ -80,9 +78,9 @@ public class BachMetricsContext {
 		
 	}
 	
-	private static void registerGraphiteSink() {
-		
-	}
+	//	private static void registerGraphiteSink() {
+	//		
+	//	}
 	
 	private static Integer getFreePort() throws IllegalStateException {
 		for (int port = 7777; port < 8888; port++) {
