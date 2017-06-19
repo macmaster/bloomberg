@@ -37,13 +37,14 @@ public class WordCountDriver {
 		FileOutputFormat.setOutputPath(job, new Path(args[1]));
 		FileSystem.get(config).delete(new Path(args[1]), true);
 		
-		System.out.println(System.getenv("HADOOP_CONF_DIR"));
-		System.out.println(System.getenv("HADOOP_HOME"));
-		System.out.println(System.getenv("HADOOP_CLASSPATH"));
+		//	System.out.println(System.getenv("HADOOP_CONF_DIR"));
+		//	System.out.println(System.getenv("HADOOP_HOME"));
+		//	System.out.println(System.getenv("HADOOP_CLASSPATH"));
 		
 		job.setMapperClass(WordCountMapper.class);
 		job.setCombinerClass(WordCountReducer.class);
 		job.setReducerClass(WordCountReducer.class);
+		job.setNumReduceTasks(3);
 		
 		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(LongWritable.class);
