@@ -83,7 +83,6 @@ public class LocationTable implements Closeable {
 		);
 		
 		return Location.parseLocation(locationString);
-		
 	}
 	
 	/**

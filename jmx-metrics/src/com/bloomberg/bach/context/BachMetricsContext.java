@@ -7,7 +7,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.hadoop.metrics2.MetricsSystem;
+import org.apache.hadoop.metrics2.impl.MetricsSystemImpl;
 import org.apache.hadoop.metrics2.lib.DefaultMetricsSystem;
+import org.apache.hadoop.metrics2.sink.GraphiteSink;
 import org.jolokia.jvmagent.JolokiaServer;
 import org.jolokia.jvmagent.JolokiaServerConfig;
 
@@ -16,23 +18,41 @@ import com.bloomberg.bach.metrics.BachMetricsJVM;
 /**
  * @author Ronald Macmaster
  * Context Package for Bach Metrics package.
+ * Manages a singleton context.
  */
 public class BachMetricsContext {
 	
-	private static volatile BachMetricsContext context;
+	private static volatile BachMetricsContext context = null;
+	private static volatile MetricsSystem system = DefaultMetricsSystem.initialize("client");
 	
 	private static String host = "localhost";
 	private static Integer port = getFreePort();
 	
-	private BachMetricsContext(MetricsSystem system) {
+	private BachMetricsContext() {
 		system.register(new BachMetricsJVM());
 	}
 	
-	public synchronized static BachMetricsContext registerContext(MetricsSystem system) {
+	private synchronized static BachMetricsContext registerContext() {
 		if (context == null) {
-			context = new BachMetricsContext(system);
+			context = new BachMetricsContext();
 		} // return singleton context.
 		return context;
+	}
+	
+	/**
+	 * Start metrics JSON service on localhost and an arbitrary port.  <br>
+	 */
+	public static void start() throws IOException {
+		System.out.format("Bach Metrics Context: start <%s, %d> %n", host, port);
+		
+		// initialize metrics system.
+		BachMetricsContext.registerContext();
+		registerGraphiteSink();
+		startJolokiaServer();
+		system.start();
+		
+		// debug system properties.
+		// System.getProperties().list(System.out);
 	}
 	
 	/**
@@ -45,20 +65,11 @@ public class BachMetricsContext {
 	}
 	
 	/**
-	 * Start metrics JSON service on localhost and an arbitrary port.  <br>
+	 * Registers a Graphite Sink with the default metrics source. <br>
 	 */
-	public static void start() throws IOException {
-		System.out.format("Bach Metrics Context: start <%s, %d> %n", host, port);
-		
-		// initialize metrics system.
-		MetricsSystem system = DefaultMetricsSystem.initialize("bach.metrics");
-		BachMetricsContext.registerContext(system);
-		system.start();
-		
-		startJolokiaServer();
-		
-		// debug system properties.
-		// System.getProperties().list(System.out);
+	private static void registerGraphiteSink() {
+		GraphiteSink sink = new GraphiteSink();
+		system.register("graphiteSink", "Bach Metrics Graphite Sink.", sink);
 	}
 	
 	/**
@@ -71,16 +82,12 @@ public class BachMetricsContext {
 		configMap.put("port", port.toString());
 		configMap.put("host", host);
 		
+		System.out.format("I> Now hosting jolokia json metrics on port: %s.%n", configMap.get("port"));
 		JolokiaServerConfig config = new JolokiaServerConfig(configMap);
 		JolokiaServer server = new JolokiaServer(config, true);
 		server.start();
-		System.out.format("I> Now hosting jolokia json metrics on port: %s.%n", configMap.get("port"));
 		
 	}
-	
-	//	private static void registerGraphiteSink() {
-	//		
-	//	}
 	
 	private static Integer getFreePort() throws IllegalStateException {
 		for (int port = 7777; port < 8888; port++) {

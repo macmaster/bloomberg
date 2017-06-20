@@ -1,7 +1,8 @@
 package com.bloomberg.bach.test;
 
-import org.apache.hadoop.metrics2.MetricsSystem;
-import org.apache.hadoop.metrics2.lib.DefaultMetricsSystem;
+import java.io.IOException;
+
+import org.apache.hadoop.conf.Configuration;
 
 import com.bloomberg.bach.context.BachMetricsContext;
 
@@ -13,14 +14,17 @@ public class Driver {
 	
 	/**
 	 * TODO document <br>
+	 * @throws IOException 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		System.out.println("Metrics Test Driver: main");
-		MetricsSystem system = DefaultMetricsSystem.initialize("bach.metrics");
-		BachMetricsContext.registerContext(system);
-		system.start();
+		BachMetricsContext.start();
 		
-		System.getProperties().list(System.out);
+		Configuration config = new Configuration();
+		String key = "client.graphite.server.server_host";
+		System.err.println(String.format("%s : %s %n", key, config.get(key)));
+		
+		// System.getProperties().list(System.out);
 		while (true) {
 		}
 	}
