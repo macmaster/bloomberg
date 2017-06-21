@@ -1,15 +1,9 @@
 package com.bloomberg.bach.context;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.hadoop.metrics2.MetricsSystem;
 import org.apache.hadoop.metrics2.lib.DefaultMetricsSystem;
-import org.jolokia.jvmagent.JolokiaServer;
-import org.jolokia.jvmagent.JolokiaServerConfig;
 
 import com.bloomberg.bach.metrics.BachMetricsJVM;
 
@@ -21,8 +15,8 @@ import com.bloomberg.bach.metrics.BachMetricsJVM;
 public class BachMetricsContext {
 	
 	private static volatile BachMetricsContext context = null;
-	private static volatile BachMetricsServer server = null;
-	private static volatile MetricsSystem system = DefaultMetricsSystem.initialize("client");
+	private static BachMetricsServer server = null;
+	private static MetricsSystem system = DefaultMetricsSystem.initialize("client");
 	
 	private BachMetricsContext() {
 		system.register(new BachMetricsJVM());
@@ -51,6 +45,29 @@ public class BachMetricsContext {
 		server = new BachMetricsServer(host, port);
 		register();
 		server.start();
+	}
+	
+	/**
+	 * Stop the metrics context. <br>
+	 */
+	public static void stop() throws IOException {
+		server.stop();
+	}
+	
+	public static Integer getPort() {
+		if (server != null) {
+			return server.getPort();
+		} else {
+			throw new IllegalStateException("Metrics Context has not been started!");
+		}
+	}
+	
+	public static String getHost() {
+		if (server != null) {
+			return server.getHost();
+		} else {
+			throw new IllegalStateException("Metrics Context has not been started!");
+		}
 	}
 	
 	private static void register() {

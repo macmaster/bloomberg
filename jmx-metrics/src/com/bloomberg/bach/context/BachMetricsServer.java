@@ -18,15 +18,17 @@ public class BachMetricsServer {
 	private String host = "localhost";
 	private Integer port = getFreePort();
 	
+	private JolokiaServer server = null;
+	
 	/**
-	 * Constructs a new BachMetricsServer
+	 * Constructs a new BachMetricsServer that reports JSON metrics on localhost and an arbitrary port.
 	 */
 	public BachMetricsServer() {
 		// TODO Auto-generated constructor stub
 	}
 	
 	/**
-	 * Constructs a new BachMetricsServer that reports on a given host and port.
+	 * Constructs a new BachMetricsServer that reports JSON metrics on a given host and port.
 	 */
 	public BachMetricsServer(String host, int port) {
 		this.host = host;
@@ -34,7 +36,7 @@ public class BachMetricsServer {
 	}
 	
 	/**
-	 * Configure and start the jolokia server. <br>
+	 * Configure and start the Jolokia server. <br>
 	 * @throws IOException 
 	 */
 	public void start() throws IOException {
@@ -45,8 +47,15 @@ public class BachMetricsServer {
 		
 		System.out.format("I> Now hosting jolokia json metrics on port: %s.%n", configMap.get("port"));
 		JolokiaServerConfig config = new JolokiaServerConfig(configMap);
-		JolokiaServer server = new JolokiaServer(config, true);
-		server.start();
+		this.server = new JolokiaServer(config, true);
+		this.server.start();
+	}
+	
+	/**
+	 * Stops the Jolokia server. <br>
+	 */
+	public void stop() throws IOException {
+		this.server.stop();
 	}
 	
 	private synchronized static Integer getFreePort() throws IllegalStateException {
