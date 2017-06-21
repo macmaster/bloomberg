@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.util.Arrays;
 
 import org.apache.hadoop.hbase.client.metrics.ScanMetrics;
+import org.apache.log4j.BasicConfigurator;
 import org.json.JSONObject;
 import org.junit.Test;
 
@@ -27,6 +28,7 @@ public class APIDriver {
 	
 	public static void main(String[] args) throws Exception {
 		APIDriver driver = new APIDriver();
+		BasicConfigurator.configure();
 		driver.populate();
 	}
 	
