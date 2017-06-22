@@ -1,15 +1,19 @@
 package edu.utexas.ronny.driver;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapred.lib.InputSampler;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.partition.TotalOrderPartitioner;
 
 import edu.utexas.ronny.map.WordCountMapper;
 import edu.utexas.ronny.reduce.WordCountReducer;
@@ -21,7 +25,7 @@ import edu.utexas.ronny.reduce.WordCountReducer;
  */
 public class WordCountDriver {
 	
-	public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
+	public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException, URISyntaxException {
 		
 		if (args.length < 2) {
 			System.err.format("usage: %s {input} {output} %n", WordCountDriver.class.getSimpleName());
@@ -44,7 +48,6 @@ public class WordCountDriver {
 		job.setMapperClass(WordCountMapper.class);
 		job.setCombinerClass(WordCountReducer.class);
 		job.setReducerClass(WordCountReducer.class);
-		job.setNumReduceTasks(3);
 		
 		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(LongWritable.class);
