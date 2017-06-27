@@ -54,6 +54,9 @@ public class BachMetricsContext {
 		server.stop();
 	}
 	
+	/**
+	 * returns the current port of operation. <br>
+	 */
 	public static Integer getPort() {
 		if (server != null) {
 			return server.getPort();
@@ -62,6 +65,9 @@ public class BachMetricsContext {
 		}
 	}
 	
+	/**
+	 * returns the current host of operation. <br>
+	 */
 	public static String getHost() {
 		if (server != null) {
 			return server.getHost();
@@ -74,18 +80,9 @@ public class BachMetricsContext {
 		// initialize metrics system.
 		System.out.format("Bach Metrics Context: started on  <%s, %d> %n", server.getHost(), server.getPort());
 		BachMetricsContext.registerContext();
-		registerGraphiteSink();
 		
 		// debug system properties.
 		// System.getProperties().list(System.out);
-	}
-	
-	/**
-	 * Registers a Graphite Sink with the default metrics source. <br>
-	 */
-	private static void registerGraphiteSink() {
-		// GraphiteSink sink = new GraphiteSink();
-		// system.register("graphiteSink", "Bach Metrics Graphite Sink.", sink);
 	}
 	
 }

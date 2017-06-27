@@ -7,11 +7,18 @@
 
 	<properties>
 		<hadoop.version>2.7.3</hadoop.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 
 	<build>
 		<sourceDirectory>src</sourceDirectory>
+		<resources>
+			<resource>
+				<directory>src/config</directory>
+			</resource>
+		</resources>
+
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>

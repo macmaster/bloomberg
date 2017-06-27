@@ -1,4 +1,4 @@
-package com.bloomberg.bach.test;
+package test.com.bloomberg.bach;
 
 import java.io.IOException;
 
