@@ -21,7 +21,10 @@ public class WordCountMapper extends Mapper<LongWritable, Text, Text, LongWritab
 		// emit word count pairs (word, 1)
 		String line = value.toString();
 		for (String word : line.split("\\W+")) {
-			context.write(new Text(word.toLowerCase()), new LongWritable(1));
+			word = word.toLowerCase().replaceAll("[_\\d]+", "");
+			if (word.length() >= 3) {
+				context.write(new Text(word), new LongWritable(1));
+			}
 		}
 	}
 	
