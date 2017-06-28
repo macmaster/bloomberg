@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.apache.hadoop.metrics2.MetricsSystem;
 import org.apache.hadoop.metrics2.lib.DefaultMetricsSystem;
+import org.apache.hadoop.metrics2.source.JvmMetrics;
 
 import com.bloomberg.bach.metrics.BachMetricsJVM;
 
@@ -20,6 +21,7 @@ public class BachMetricsContext {
 	
 	private BachMetricsContext() {
 		system.register(new BachMetricsJVM());
+		JvmMetrics.create("client-hadoop", "sessionId", system);
 	}
 	
 	private synchronized static BachMetricsContext registerContext() {

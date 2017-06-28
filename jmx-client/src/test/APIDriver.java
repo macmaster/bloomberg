@@ -5,7 +5,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.hadoop.hbase.client.metrics.ScanMetrics;
 import org.json.JSONObject;
@@ -26,19 +28,32 @@ public class APIDriver {
 	public String filename = "input/texas.txt";
 	
 	public static void main(String[] args) throws Exception {
-		APIDriver driver = new APIDriver();
 		// BasicConfigurator.configure();
-		driver.populate();
+		APIDriver driver = new APIDriver();
+		BachMetricsContext.start();
+		
+		List<String> commands = new ArrayList<String>();
+		for (String command : args) {
+			commands.add(command.toLowerCase());
+		}
+		
+		driver.execute(commands);
 	}
 	
-	public void populate() throws IOException {
-		BachMetricsContext.start();
-		for (String filename : new String[] { "texas.txt", "hawaii.txt", "new_york.txt", "wyoming.txt" }) {
-			this.filename = "input/" + filename;
-			testLocationTablePut();
+	public void execute(List<String> commands) throws IOException {
+		for (String command : commands) {
+			if (command.equals("put")) {
+				for (String filename : new String[] { "texas.txt" /* "texas.txt", "hawaii.txt", "new_york.txt", "wyoming.txt" */ }) {
+					this.filename = "input/" + filename;
+					System.out.println("putting: " + filename);
+					testLocationTablePut();
+				}
+			} else if (command.equals("scan")) {
+				testScan();
+			} else if (command.equals("get")) {
+				testLocationTableGet();
+			}
 		}
-		// testScan();
-		testLocationTableGet();
 	}
 	
 	@Test
