@@ -10,7 +10,7 @@ import com.bloomberg.bach.context.BachMetricsContext;
  * @author Ronald Macmaster
  * TODO document
  */
-public class Driver {
+public class ContextDriver {
 	
 	/**
 	 * TODO document <br>
