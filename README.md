@@ -33,3 +33,7 @@ Sergey Brin and Lawrence Page
 Michael Fischer, Nancy Lynch, and Machael Paterson  
 [https://groups.csail.mit.edu/tds/papers/Lynch/jacm85.pdf]  
 
+1) Paxos Made Simple (2001):  
+Leslie Lamport  
+[http://lamport.azurewebsites.net/pubs/paxos-simple.pdf]  
+
