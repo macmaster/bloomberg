@@ -1,4 +1,4 @@
-package com.bloomberg.bach.metrics;
+package com.bloomberg.bach.context;
 
 import java.util.Date;
 

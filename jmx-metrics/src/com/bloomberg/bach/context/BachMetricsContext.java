@@ -6,8 +6,6 @@ import org.apache.hadoop.metrics2.MetricsSystem;
 import org.apache.hadoop.metrics2.lib.DefaultMetricsSystem;
 import org.apache.hadoop.metrics2.source.JvmMetrics;
 
-import com.bloomberg.bach.metrics.BachMetricsJVM;
-
 /**
  * @author Ronald Macmaster
  * Context Package for Bach Metrics package.
@@ -35,9 +33,7 @@ public class BachMetricsContext {
 	 * Start metrics JSON service on localhost and an arbitrary port.  <br>
 	 */
 	public static void start() throws IOException {
-		server = new BachMetricsServer();
-		register();
-		server.start();
+		start(null, null);
 	}
 	
 	/**
@@ -45,8 +41,12 @@ public class BachMetricsContext {
 	 */
 	public static void start(String host, Integer port) throws IOException {
 		server = new BachMetricsServer(host, port);
-		register();
 		server.start();
+		
+		// initialize metrics system.
+		BachMetricsContext.registerContext();
+		System.out.format("Bach Metrics Context: started on  <%s, %d> %n", server.getHost(), server.getPort());
+		// System.getProperties().list(System.out);		
 	}
 	
 	/**
@@ -76,15 +76,6 @@ public class BachMetricsContext {
 		} else {
 			throw new IllegalStateException("Metrics Context has not been started!");
 		}
-	}
-	
-	private static void register() {
-		// initialize metrics system.
-		System.out.format("Bach Metrics Context: started on  <%s, %d> %n", server.getHost(), server.getPort());
-		BachMetricsContext.registerContext();
-		
-		// debug system properties.
-		// System.getProperties().list(System.out);
 	}
 	
 }

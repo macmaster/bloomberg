@@ -20,6 +20,8 @@ package com.bloomberg.bach.metrics;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.Date;
+import java.util.regex.Matcher;
 
 import org.apache.commons.configuration.SubsetConfiguration;
 import org.apache.hadoop.classification.InterfaceAudience;
@@ -27,6 +29,7 @@ import org.apache.hadoop.classification.InterfaceStability;
 import org.apache.hadoop.metrics2.AbstractMetric;
 import org.apache.hadoop.metrics2.MetricsRecord;
 import org.apache.hadoop.metrics2.MetricsSink;
+import org.apache.hadoop.metrics2.MetricsTag;
 
 /**
  * A metrics sink that dumps to the console.
@@ -51,19 +54,38 @@ public class ConsoleSink implements MetricsSink, Closeable {
 	
 	@Override
 	public void putMetrics(MetricsRecord record) {
-		System.out.format("timestamp: %s%n", record.timestamp());
+		System.out.format("%s: %s %n", record.name(), new Date(record.timestamp()));
+		String metricsString = "";
+		
+		// print tags.
+		System.out.println("tags:");
+		for (MetricsTag tag : record.tags()) {
+			metricsString = replaceMetricString(formatString, tag.name(), tag.description(), tag.value());
+			System.out.format("\t%s%n", metricsString);
+		}
+
+		// print metrics.
+		System.out.println("metrics:");
 		for (AbstractMetric metric : record.metrics()) {
-			String output = formatString;
-			output = output.replaceAll("%n", metric.name());
-			output = output.replaceAll("%d", metric.description());
-			output = output.replaceAll("%v", metric.value().toString());
-			System.out.println("\t" + output);
+			metricsString = replaceMetricString(formatString, metric.name(), metric.description(), metric.value().toString());
+			System.out.format("\t%s%n", metricsString);
 		}
 	}
 	
 	@Override
 	public void flush() {
 		System.out.flush();
+	}
+	
+	/**
+	 * build metrics string from token replacement. <br>
+	 */
+	private String replaceMetricString(String formatString, String name, String description, String value) {
+		String output = formatString;
+		output = output.replaceAll("%n", Matcher.quoteReplacement(name));
+		output = output.replaceAll("%d", Matcher.quoteReplacement(description));
+		output = output.replaceAll("%v", Matcher.quoteReplacement(value));
+		return output;
 	}
 	
 }

@@ -15,24 +15,18 @@ import org.jolokia.jvmagent.JolokiaServerConfig;
  */
 public class BachMetricsServer {
 	
-	private String host = "localhost";
-	private Integer port = getFreePort();
+	private String host;
+	private Integer port;
 	
 	private JolokiaServer server = null;
 	
 	/**
-	 * Constructs a new BachMetricsServer that reports JSON metrics on localhost and an arbitrary port.
-	 */
-	public BachMetricsServer() {
-		// TODO Auto-generated constructor stub
-	}
-	
-	/**
 	 * Constructs a new BachMetricsServer that reports JSON metrics on a given host and port.
+	 * defaults to localhost and an arbitrary port for bad parameters.
 	 */
-	public BachMetricsServer(String host, int port) {
-		this.host = host;
-		this.port = port;
+	public BachMetricsServer(String host, Integer port) {
+		this.host = host != null ? host : "localhost";
+		this.port = port != null ? port : getFreePort();
 	}
 	
 	/**

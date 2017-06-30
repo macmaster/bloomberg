@@ -18,6 +18,9 @@ public class ContextDriver {
 	 */
 	public static void main(String[] args) throws IOException {
 		System.out.println("Metrics Test Driver: main");
+		
+		System.out.println("%v".replace("%v", "$"));
+		
 		BachMetricsContext.start();
 		
 		Configuration config = new Configuration();
