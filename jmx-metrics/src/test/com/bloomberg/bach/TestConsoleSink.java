@@ -19,6 +19,8 @@
 
 package test.com.bloomberg.bach;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -34,6 +36,7 @@ import org.apache.hadoop.metrics2.annotation.Metric;
 import org.apache.hadoop.metrics2.annotation.Metric.Type;
 import org.apache.hadoop.metrics2.annotation.Metrics;
 import org.apache.hadoop.metrics2.impl.MetricsSystemImpl;
+import org.apache.hadoop.metrics2.lib.DefaultMetricsSystem;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -43,7 +46,7 @@ import org.junit.rules.TestName;
 import com.bloomberg.bach.metrics.ConsoleSink;
 
 /**
- * Tests the ConsoleSink
+ * Tests the ConsoleSink. <br>
  * Redirects output from std.out (System.out) to verify console output.
  */
 public class TestConsoleSink {
@@ -51,9 +54,6 @@ public class TestConsoleSink {
 	// configuration file
 	private String prefix = "test";
 	private File configFile = new File(String.format("hadoop-metrics2-%s.properties", prefix));
-	
-	// metrics records
-	private MetricsSystem metricsSystem = new MetricsSystemImpl();
 	
 	// redirection io streams
 	private BufferedReader reader;
@@ -64,7 +64,7 @@ public class TestConsoleSink {
 	public TestName testName = new TestName();
 	
 	@Metrics(name = "jvmMetricsRecord", context = "TestConsoleSink")
-	private static class JvmMetrics {
+	public static class JvmMetrics {
 		
 		private static Runtime runtime = Runtime.getRuntime();
 		
@@ -86,11 +86,21 @@ public class TestConsoleSink {
 	}
 	
 	@Metrics(name = "junkMetricsRecord", context = "TestConsoleSink")
-	private static class JunkMetrics {
+	public static class JunkMetrics {
 		
 		@Metric(value = { "StringTag", "a simple string metric" }, type = Type.TAG)
 		String stringTag() {
-			return "testing the console sink ... ";
+			return "testing the console sink ...";
+		}
+		
+		@Metric(value = { "metric1", "a simple gauge" }, type = Type.GAUGE)
+		long metric1() {
+			return -7;
+		}
+		
+		@Metric(value = { "metric2", "a simple counter" }, type = Type.COUNTER)
+		long metric2() {
+			return 8675309;
 		}
 		
 	}
@@ -105,36 +115,40 @@ public class TestConsoleSink {
 		System.setOut(writer); // redirects System.out to test pipedInputStream.
 	}
 	
+	/**
+	 * Verifies correct console output for metrics reporting. <br>
+	 * Output is redirected from std.out through piped input and output streams.
+	 */
 	@Test
 	public void testConsoleSink() throws Exception {
 		console.format("running %s%n", testName.getMethodName());
 		
 		buildConfiguration("%n - %v");
-		metricsSystem.init(prefix);
-		metricsSystem.start();
-		metricsSystem.publishMetricsNow();
-		metricsSystem.stop();
-		metricsSystem.shutdown();
+		collectMetricsSample(new Class<?>[] { JvmMetrics.class, JunkMetrics.class });
 		
 		writer.close();
-		String line = "";
+		String line = "", buffer = "";
+		StringBuilder builder = new StringBuilder();
 		while ((line = reader.readLine()) != null) {
-			console.println(line);
-		}
+			builder.append(line + "\n");
+		} // build buffered output
+		buffer = builder.toString();
+		
+		assertTrue(buffer.contains("StringTag - testing the console sink ..."));
+		assertTrue(buffer.contains("metric1 - -7"));
+		assertTrue(buffer.contains("metric2 - 8675309"));
 	}
 	
+	/**
+	 * Prints to the console with no exceptions. <br>
+	 */
 	@Test
 	public void testConsoleOutput() throws Exception {
 		console.format("running %s%n", testName.getMethodName());
 		System.setOut(console);
 		
 		buildConfiguration("%n - %v");
-		metricsSystem.init(prefix);
-		metricsSystem.start();
-		metricsSystem.publishMetricsNow();
-		metricsSystem.stop();
-		metricsSystem.shutdown();
-		
+		collectMetricsSample(new Class<?>[] { JvmMetrics.class, JunkMetrics.class });
 	}
 	
 	@After
@@ -147,10 +161,25 @@ public class TestConsoleSink {
 	
 	private void buildConfiguration(String formatString) throws ConfigurationException {
 		PropertiesConfiguration config = new PropertiesConfiguration();
-		config.addProperty("test.sink.console.publishSelfMetrics", false);
+		config.addProperty("*.period", 10000); // long to avoid automatic sampling.
 		config.addProperty("test.sink.console.class", ConsoleSink.class.getName());
 		config.addProperty("test.sink.console.format", formatString);
 		config.save(configFile);
+	}
+	
+	private void collectMetricsSample(Class<?>[] metricsClasses) throws Exception {
+		MetricsSystem metricsSystem = new MetricsSystemImpl();
+		metricsSystem.init(prefix);
+		for (Class<?> metric : metricsClasses) {
+			metricsSystem.register(metric.newInstance());
+		}
+		
+		// sample metrics.
+		metricsSystem.start();
+		metricsSystem.publishMetricsNow();
+		metricsSystem.stop();
+		metricsSystem.shutdown();
+		DefaultMetricsSystem.shutdown();
 	}
 	
 }
