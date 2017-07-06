@@ -1,5 +1,5 @@
-# hadoop
-Starter Project for Hadoop and HBase.
+# bloomberg
+Work projects for Hadoop and HBase monitoring / testing.
 
 # projects
 * jmx-client: client for accessing HBase / HDFS and exporting RESTful JSON jmx metrics.
