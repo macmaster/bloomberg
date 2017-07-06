@@ -30,7 +30,7 @@
 					<downloadSources>true</downloadSources>
 					<downloadJavadocs>true</downloadJavadocs>					
 					<excludes>
-						<exclude>**/test/**/*.java</exclude>
+						<!-- <exclude>**/test/**/*.java</exclude> -->
 					</excludes>
 				</configuration>
 			</plugin>

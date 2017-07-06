@@ -45,8 +45,8 @@ public class CustomSink implements MetricsSink, Closeable {
 		String className = conf.getString(CLASS_KEY, null);
 		
 		try { // attempt to instantiate custom record handler.	
-			Class<?> clazz = Class.forName(className);
-			Constructor<?> constructor = clazz.getDeclaredConstructor();
+			Class<?> cls = Class.forName(className);
+			Constructor<?> constructor = cls.getDeclaredConstructor();
 			recordHandler = (RecordHandler) constructor.newInstance();
 			
 		} catch (Exception err) {
@@ -57,8 +57,7 @@ public class CustomSink implements MetricsSink, Closeable {
 	
 	@Override
 	public void close() throws IOException {
-		// TODO Auto-generated method stub
-		
+		recordHandler.close();
 	}
 	
 	@Override
@@ -68,7 +67,7 @@ public class CustomSink implements MetricsSink, Closeable {
 	
 	@Override
 	public void flush() {
-		// TODO Auto-generated method stub
+		recordHandler.flush();
 	}
 	
 }

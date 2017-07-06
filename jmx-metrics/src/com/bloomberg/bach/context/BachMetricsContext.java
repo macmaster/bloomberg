@@ -17,9 +17,12 @@ public class BachMetricsContext {
 	private static BachMetricsServer server = null;
 	private static MetricsSystem system = DefaultMetricsSystem.initialize("client");
 	
+	private final String processName = "client";
+	private final String sessionId = "";
+	
 	private BachMetricsContext() {
 		system.register(new BachMetricsJVM());
-		JvmMetrics.create("client-hadoop", "sessionId", system);
+		JvmMetrics.create(processName, sessionId, system);
 	}
 	
 	private synchronized static BachMetricsContext registerContext() {

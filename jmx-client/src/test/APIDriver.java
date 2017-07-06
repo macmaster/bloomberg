@@ -5,9 +5,17 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectInstance;
+import javax.management.ObjectName;
 
 import org.apache.hadoop.hbase.client.metrics.ScanMetrics;
 import org.json.JSONObject;
@@ -38,6 +46,7 @@ public class APIDriver {
 		}
 		
 		driver.execute(commands);
+		
 	}
 	
 	public void execute(List<String> commands) throws IOException {
@@ -80,8 +89,8 @@ public class APIDriver {
 				BufferedReader reader = new BufferedReader(stream);) {
 				System.out.println("/*** Location Table Shell ***/");
 				// command loop.
-				String query = "";
-				System.out.print("> ");
+				String query = "", cursor = "> ";
+				System.out.print(cursor);
 				while ((query = reader.readLine()) != null) {
 					switch (query) {
 						case "exit":
@@ -91,7 +100,7 @@ public class APIDriver {
 						default:
 							System.out.println(new JSONObject(metricsTable.getLocation(query)).toString(2));
 					}
-					System.out.print("> ");
+					System.out.print(cursor);
 				}
 			} catch (Exception exception) {
 				exception.printStackTrace();
@@ -135,6 +144,7 @@ public class APIDriver {
 				
 			}
 			
+			printMBeans(); // debug MBeans.
 		} catch (Exception exception) {
 			exception.printStackTrace();
 		}
@@ -193,6 +203,22 @@ public class APIDriver {
 	public void testElevationAPI() {
 		ElevationRequest elevationRequest = new ElevationRequest();
 		System.out.println(elevationRequest.get(27.986065, 86.922623)); // pyongyang
+	}
+	
+	/**
+	 * Print all of the active MBeans. <br>
+	 * @throws MalformedObjectNameException 
+	 */
+	private static void printMBeans() throws MalformedObjectNameException {
+		MBeanServer server = ManagementFactory.getPlatformMBeanServer();
+		// TODO : query all mbeans with format: com.yammer.metrics.*.
+		// build a MetricsSource from the reported JMX bean server.
+		Set<ObjectInstance> mbeans = server.queryMBeans(new ObjectName("*hbase*:*"), null);
+		//mbeans.removeAll(server.queryMBeans(null, )); // set filter
+		
+		String mbeanString = mbeans.stream().map(ObjectInstance::getObjectName).map(ObjectName::toString).collect(Collectors.joining("\n"));
+		
+		System.out.format("MBeans: %s%n", mbeanString);
 	}
 	
 }

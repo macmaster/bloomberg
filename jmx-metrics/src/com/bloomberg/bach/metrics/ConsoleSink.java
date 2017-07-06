@@ -79,6 +79,10 @@ public class ConsoleSink implements MetricsSink, Closeable {
 	
 	/**
 	 * build metrics string from token replacement. <br>
+	 * format string specifiers: <br>
+	 * %n = name <br>
+	 * %d = description <br>
+	 * %v = value <br>
 	 */
 	private String replaceMetricString(String formatString, String name, String description, String value) {
 		String output = formatString;
