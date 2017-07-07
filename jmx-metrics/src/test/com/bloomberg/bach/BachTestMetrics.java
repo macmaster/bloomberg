@@ -1,8 +1,9 @@
-package com.bloomberg.bach.context;
+package test.com.bloomberg.bach;
 
 import java.util.Date;
 
 import org.apache.hadoop.metrics2.annotation.Metric;
+import org.apache.hadoop.metrics2.annotation.Metric.Type;
 import org.apache.hadoop.metrics2.annotation.Metrics;
 
 /**
@@ -10,24 +11,24 @@ import org.apache.hadoop.metrics2.annotation.Metrics;
  * Creates a new bach metrics context for monitoring.
  */
 @Metrics(context = "Hadoop")
-public class BachMetricsJVM {
+public class BachTestMetrics {
 	
-	@Metric({ "counter", "custom bach metric" })
-	public String getCounter() {
-		return Integer.toBinaryString(-42);
+	@Metric(value = { "counter", "custom bach metric" }, type = Type.GAUGE)
+	public long getCounter() {
+		return -42;
 	}
 	
-	@Metric({ "name", "application's name" })
+	@Metric(value = { "name", "application's name" }, type = Type.TAG)
 	public String getApplicationName() {
 		return this.getClass().getName();
 	}
 	
-	@Metric({ "datetime", "the current datetime" })
+	@Metric(value = { "datetime", "the current datetime" }, type = Type.DEFAULT)
 	public String getDate() {
 		return new Date().toString();
 	}
 	
-	@Metric({ "classloader", "application class loader" })
+	@Metric(value = { "classloader", "application class loader" }, type = Type.DEFAULT)
 	public String getClassLoader() {
 		return this.getClass().getClassLoader().getClass().getName();
 	}
