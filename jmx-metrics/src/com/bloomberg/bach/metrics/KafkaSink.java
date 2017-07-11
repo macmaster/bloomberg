@@ -19,8 +19,12 @@
 package com.bloomberg.bach.metrics;
 
 import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.Properties;
 import java.util.regex.Matcher;
 
 import org.apache.commons.configuration.SubsetConfiguration;
@@ -30,65 +34,76 @@ import org.apache.hadoop.metrics2.AbstractMetric;
 import org.apache.hadoop.metrics2.MetricsRecord;
 import org.apache.hadoop.metrics2.MetricsSink;
 import org.apache.hadoop.metrics2.MetricsTag;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 
 /**
- * A metrics sink that dumps to the console.
+ * A metrics sink that dumps to a Kafka stream.
  */
 @InterfaceAudience.Public
 @InterfaceStability.Evolving
-public class ConsoleSink implements MetricsSink, Closeable {
+public class KafkaSink implements MetricsSink, Closeable {
 	
-	public static final String FORMAT_KEY = "format";
-	private String formatString = "";
+	// configuration keys
+	public static final String CONFIG_FILE_KEY = "file";
+	public static final String TOPIC_KEY = "topic";
+	
+	private String topic = "";
+	private Properties properties = new Properties();
+	private KafkaProducer<String, String> producer = null;
 	
 	@Override
 	public void init(SubsetConfiguration conf) {
-		formatString = conf.getString(FORMAT_KEY, "%n : %v");
+		String filename = conf.getString(CONFIG_FILE_KEY, null);
+		topic = conf.getString(TOPIC_KEY, "test");
+		
+		if (filename == null) {
+			// parse configuration file manually.
+			Iterator<?> itr = conf.getKeys();
+			while (itr.hasNext()) {
+				String key = (String) itr.next();
+				properties.put(key, conf.getString(key));
+				System.out.format("%s : %s%n", key, conf.getString(key));
+			}
+		} else {
+			try { // load configuration from file
+				properties.load(new FileInputStream(new File(filename)));
+			} catch (Exception error) {
+				error.printStackTrace();
+			}
+		}
+		
+		// create the kafka producer. 
+		producer = new KafkaProducer<String, String>(properties);
 	}
 	
 	@Override
 	public void close() throws IOException {
-		// Do not close System.out here. 
+		producer.close();
 	}
 	
 	@Override
 	public void putMetrics(MetricsRecord record) {
 		System.out.format("%s: %s %n", record.name(), new Date(record.timestamp()));
-		String metricsString = "";
+		ProducerRecord<String, String> producerRecord = null;
 		
 		// print tags.
-		System.out.println("tags:");
 		for (MetricsTag tag : record.tags()) {
-			metricsString = replaceMetricString(formatString, tag.name(), tag.description(), tag.value());
-			System.out.format("\t%s%n", metricsString);
+			producerRecord = new ProducerRecord<String, String>(topic, tag.name(), tag.value());
+			producer.send(producerRecord);
 		}
 		
 		// print metrics.
-		System.out.println("metrics:");
 		for (AbstractMetric metric : record.metrics()) {
-			metricsString = replaceMetricString(formatString, metric.name(), metric.description(), metric.value().toString());
-			System.out.format("\t%s%n", metricsString);
+			producerRecord = new ProducerRecord<String, String>(topic, metric.name(), metric.value().toString());
+			producer.send(producerRecord);
 		}
+		
 	}
 	
 	@Override
 	public void flush() {
-		System.out.flush();
-	}
-	
-	/**
-	 * build metrics string from token replacement. <br>
-	 * format string specifiers: <br>
-	 * %n = name <br>
-	 * %d = description <br>
-	 * %v = value <br>
-	 */
-	private String replaceMetricString(String formatString, String name, String description, String value) {
-		String output = formatString;
-		output = output.replaceAll("%n", Matcher.quoteReplacement(name));
-		output = output.replaceAll("%d", Matcher.quoteReplacement(description));
-		output = output.replaceAll("%v", Matcher.quoteReplacement(value));
-		return output;
+		producer.flush();
 	}
 	
 }

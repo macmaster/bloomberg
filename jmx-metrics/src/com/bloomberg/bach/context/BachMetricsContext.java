@@ -6,7 +6,7 @@ import org.apache.hadoop.metrics2.MetricsSystem;
 import org.apache.hadoop.metrics2.lib.DefaultMetricsSystem;
 import org.apache.hadoop.metrics2.source.JvmMetrics;
 
-import test.com.bloomberg.bach.BachTestMetrics;
+import com.bloomberg.bach.metrics.HBaseSource;
 
 /**
  * @author Ronald Macmaster
@@ -16,25 +16,25 @@ import test.com.bloomberg.bach.BachTestMetrics;
 public class BachMetricsContext {
 	
 	// singleton context object.
-	private static volatile BachMetricsContext context = null;
+	private static volatile BachMetricsContext INSTANCE = null;
 	
 	// metrics reporting via JMX and metrics2
 	private static BachMetricsServer server = null;
 	private static MetricsSystem system = DefaultMetricsSystem.initialize("client");
 	
 	private final String processName = "client";
-	private final String sessionId = "";
+	private final String sessionId = "client		";
 	
 	private BachMetricsContext() {
-		system.register(new BachTestMetrics());
 		JvmMetrics.create(processName, sessionId, system);
+		HBaseSource.create(processName, sessionId, system);
 	}
 	
-	private synchronized static BachMetricsContext registerContext() {
-		if (context == null) {
-			context = new BachMetricsContext();
+	private static synchronized BachMetricsContext registerContext() {
+		if (INSTANCE == null) {
+			INSTANCE = new BachMetricsContext();
 		} // return singleton context.
-		return context;
+		return INSTANCE;
 	}
 	
 	/**

@@ -7,6 +7,7 @@
 
 	<properties>
 		<hadoop.version>2.7.3</hadoop.version>
+		<jolokia.version>1.3.6</jolokia.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
@@ -30,7 +31,7 @@
 					<downloadSources>true</downloadSources>
 					<downloadJavadocs>true</downloadJavadocs>					
 					<excludes>
-						<!-- <exclude>**/test/**/*.java</exclude> -->
+						<!-- <exclude>**/test/**/*.java</exclude>  -->
 					</excludes>
 				</configuration>
 			</plugin>
@@ -45,6 +46,8 @@
 					</excludes>
 				</configuration>
 			</plugin>
+
+			<!-- jar shading for complete deployment -->
 			<!-- <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
@@ -109,8 +112,13 @@
 		<dependency>
 			<groupId>org.jolokia</groupId>
 			<artifactId>jolokia-jvm</artifactId>
-			<version>1.3.6</version>
-			<!-- <classifier>agent</classifier> -->
+			<version>${jolokia.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka-clients</artifactId>
+			<version>0.11.0.0</version>
 		</dependency>
 	</dependencies>
 </project>
