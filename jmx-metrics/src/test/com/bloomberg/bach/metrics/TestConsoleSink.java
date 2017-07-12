@@ -38,7 +38,9 @@ import org.apache.hadoop.metrics2.annotation.Metrics;
 import org.apache.hadoop.metrics2.impl.MetricsSystemImpl;
 import org.apache.hadoop.metrics2.lib.DefaultMetricsSystem;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
@@ -59,6 +61,9 @@ public class TestConsoleSink {
 	private BufferedReader reader;
 	private PrintStream writer;
 	private PrintStream console;
+	
+	// Metrics System.
+	private MetricsSystem metricsSystem;
 	
 	@Rule // junit test name
 	public TestName testName = new TestName();
@@ -168,8 +173,8 @@ public class TestConsoleSink {
 	}
 	
 	private void collectMetricsSample(Class<?>[] metricsClasses) throws Exception {
-		MetricsSystem metricsSystem = new MetricsSystemImpl();
-		metricsSystem.init(prefix);
+		metricsSystem = new MetricsSystemImpl(prefix);
+		
 		for (Class<?> metric : metricsClasses) {
 			metricsSystem.register(metric.newInstance());
 		}
@@ -178,6 +183,7 @@ public class TestConsoleSink {
 		metricsSystem.start();
 		metricsSystem.publishMetricsNow();
 		metricsSystem.stop();
+		
 		metricsSystem.shutdown();
 		DefaultMetricsSystem.shutdown();
 	}

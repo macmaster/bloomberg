@@ -8,7 +8,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 
 /**
  * @author Ronald Macmaster
- * TODO document
+ * Simple echo consumer to read from a kafka broker stream.
  */
 public class Consumer {
 	

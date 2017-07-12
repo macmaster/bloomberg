@@ -48,8 +48,9 @@ public class HBaseSource implements MetricsSource {
 	
 	@Override
 	public void getMetrics(MetricsCollector collector, boolean all) {
-		// MetricsRecordBuilder rb = collector.addRecord(HBaseMetrics).setContext("jvm").tag(ProcessName, processName).tag(SessionId, sessionId);
-		
+		// MetricsRecordBuilder rb = collector.addRecord(HBaseMetrics).setContext("jvm").tag(ProcessName, processName).tag(SessionId, sessionId);		
 	}
+	
+	
 	
 }

@@ -35,7 +35,7 @@ public class ReflectionDriver {
 		System.out.format("%s.class.getDeclaredConstructors(): %s%n", clazz.getSimpleName(), Arrays.asList(clazz.getDeclaredConstructors()));
 		
 		System.out.println("\n\nInheritance Path: ");
-		System.out.println(getInheritancePath(clazz).stream().map(Class<?>::toString).collect(Collectors.joining(" <= ")).toString());
+		System.out.println(getInheritancePath(clazz).stream().map(Object::toString).collect(Collectors.joining(" <= ")).toString());
 		
 		assertEquals(new byte[1024][1024][1024].getClass(), byte[][][].class);
 		assertEquals(void.class, Void.TYPE);
