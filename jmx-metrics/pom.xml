@@ -6,15 +6,17 @@
 	<version>0.0.1-SNAPSHOT</version>
 
 	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<hadoop.version>2.7.3</hadoop.version>
 		<jolokia.version>1.3.6</jolokia.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<kafka.version>0.11.0.0</kafka.version>
 		<hbase.metrics.version>2.0.0-alpha-1</hbase.metrics.version>
 	</properties>
 
 
 	<build>
-		<sourceDirectory>src</sourceDirectory>
+		<sourceDirectory>src/main</sourceDirectory>
+		<testSourceDirectory>src/test</testSourceDirectory>
 		<resources>
 			<resource>
 				<directory>src/config</directory>
@@ -31,9 +33,6 @@
 					<target>1.8</target>
 					<downloadSources>true</downloadSources>
 					<downloadJavadocs>true</downloadJavadocs>					
-					<excludes>
-						<exclude>**/test/**/*.java</exclude>  
-					</excludes>
 				</configuration>
 			</plugin>
 
@@ -42,9 +41,6 @@
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>3.0.2</version>
 				<configuration>
-					<excludes>
-						<exclude>src/test/**</exclude>
-					</excludes>
 				</configuration>
 			</plugin>
 
@@ -120,7 +116,7 @@
 		<dependency>
 			<groupId>org.apache.kafka</groupId>
 			<artifactId>kafka-clients</artifactId>
-			<version>0.11.0.0</version>
+			<version>${kafka.version}</version>
 		</dependency>
 
 		<dependency>

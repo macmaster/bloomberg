@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package test.com.bloomberg.bach.metrics;
+package com.bloomberg.bach.metrics;
 
 import static org.junit.Assert.assertTrue;
 

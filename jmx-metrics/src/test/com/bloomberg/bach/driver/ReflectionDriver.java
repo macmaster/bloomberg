@@ -1,5 +1,5 @@
 
-package test.com.bloomberg.bach.driver;
+package com.bloomberg.bach.driver;
 
 import static org.junit.Assert.assertEquals;
 
