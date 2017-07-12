@@ -1,5 +1,5 @@
 
-package test.com.bloomberg.bach;
+package test.com.bloomberg.bach.driver;
 
 import static org.junit.Assert.assertEquals;
 
@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 import org.junit.Test;
 
-import com.bloomberg.bach.context.BachMetricsServer;
+import com.bloomberg.bach.agent.BachMetricsServer;
 
 /**
  * @author Ronald Macmaster

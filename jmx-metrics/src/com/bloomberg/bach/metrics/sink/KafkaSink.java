@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.bloomberg.bach.metrics;
+package com.bloomberg.bach.metrics.sink;
 
 import java.io.Closeable;
 import java.io.File;
@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Properties;
-import java.util.regex.Matcher;
 
 import org.apache.commons.configuration.SubsetConfiguration;
 import org.apache.hadoop.classification.InterfaceAudience;

@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-package test.com.bloomberg.bach;
+package test.com.bloomberg.bach.metrics;
 
 import static org.junit.Assert.assertTrue;
 
@@ -43,13 +43,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
 
-import com.bloomberg.bach.metrics.ConsoleSink;
+import com.bloomberg.bach.metrics.sink.ConsoleSink;
 
 /**
- * Tests the KafkaSink. <br>
- * TODO: Description.
+ * Tests the ConsoleSink. <br>
+ * Redirects output from std.out (System.out) to verify console output.
  */
-public class TestKafkaSink {
+public class TestConsoleSink {
 	
 	// configuration file
 	private String prefix = "test";
@@ -63,7 +63,7 @@ public class TestKafkaSink {
 	@Rule // junit test name
 	public TestName testName = new TestName();
 	
-	@Metrics(name = "jvmMetricsRecord", context = "TestKafkaSink")
+	@Metrics(name = "jvmMetricsRecord", context = "TestConsoleSink")
 	public static class JvmMetrics {
 		
 		private static Runtime runtime = Runtime.getRuntime();
@@ -85,12 +85,12 @@ public class TestKafkaSink {
 		
 	}
 	
-	@Metrics(name = "junkMetricsRecord", context = "TestKafkaSink")
+	@Metrics(name = "junkMetricsRecord", context = "TestConsoleSink")
 	public static class JunkMetrics {
 		
 		@Metric(value = { "StringTag", "a simple string metric" }, type = Type.TAG)
 		String stringTag() {
-			return "testing the kafka sink ...";
+			return "testing the console sink ...";
 		}
 		
 		@Metric(value = { "metric1", "a simple gauge" }, type = Type.GAUGE)
@@ -162,8 +162,8 @@ public class TestKafkaSink {
 	private void buildConfiguration(String formatString) throws ConfigurationException {
 		PropertiesConfiguration config = new PropertiesConfiguration();
 		config.addProperty("*.period", 10000); // long to avoid automatic sampling.
-		config.addProperty("test.sink.kafka.class", ConsoleSink.class.getName());
-		// config.addProperty("test.sink.console.format", formatString);
+		config.addProperty("test.sink.console.class", ConsoleSink.class.getName());
+		config.addProperty("test.sink.console.format", formatString);
 		config.save(configFile);
 	}
 	

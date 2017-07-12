@@ -1,11 +1,11 @@
-package test.com.bloomberg.bach;
+package test.com.bloomberg.bach.driver;
 
 import java.io.IOException;
 
 import org.apache.hadoop.metrics2.lib.DefaultMetricsSystem;
 import org.apache.log4j.BasicConfigurator;
 
-import com.bloomberg.bach.context.BachMetricsContext;
+import com.bloomberg.bach.agent.BachMetricsContext;
 
 /**
  * @author Ronald Macmaster

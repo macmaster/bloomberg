@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.bloomberg.bach.metrics;
+package com.bloomberg.bach.metrics.sink;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -28,6 +28,8 @@ import org.apache.hadoop.classification.InterfaceStability;
 import org.apache.hadoop.metrics2.MetricsException;
 import org.apache.hadoop.metrics2.MetricsRecord;
 import org.apache.hadoop.metrics2.MetricsSink;
+
+import com.bloomberg.bach.metrics.RecordHandler;
 
 /**
  * A metrics sink that dumps to a custom record handler.

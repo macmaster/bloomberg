@@ -1,6 +1,6 @@
-package com.bloomberg.bach.metrics;
+package com.bloomberg.bach.metrics.source;
 
-import static com.bloomberg.bach.metrics.HBaseMetricsInfo.HBaseMetrics;
+import static com.bloomberg.bach.metrics.source.HBaseMetricsInfo.HBaseMetrics;
 
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability;

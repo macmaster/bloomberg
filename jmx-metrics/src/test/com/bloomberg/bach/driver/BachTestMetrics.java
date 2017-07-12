@@ -1,4 +1,4 @@
-package test.com.bloomberg.bach;
+package test.com.bloomberg.bach.driver;
 
 import java.util.Date;
 

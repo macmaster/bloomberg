@@ -1,4 +1,4 @@
-package com.bloomberg.bach.context;
+package com.bloomberg.bach.agent;
 
 import java.io.IOException;
 
@@ -6,7 +6,7 @@ import org.apache.hadoop.metrics2.MetricsSystem;
 import org.apache.hadoop.metrics2.lib.DefaultMetricsSystem;
 import org.apache.hadoop.metrics2.source.JvmMetrics;
 
-import com.bloomberg.bach.metrics.HBaseSource;
+import com.bloomberg.bach.metrics.source.HBaseSource;
 
 /**
  * @author Ronald Macmaster

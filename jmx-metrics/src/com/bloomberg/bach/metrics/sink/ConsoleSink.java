@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package com.bloomberg.bach.metrics;
+package com.bloomberg.bach.metrics.sink;
 
 import java.io.Closeable;
 import java.io.IOException;

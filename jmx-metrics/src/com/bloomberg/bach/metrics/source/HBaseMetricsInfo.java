@@ -1,4 +1,4 @@
-package com.bloomberg.bach.metrics;
+package com.bloomberg.bach.metrics.source;
 
 import org.apache.hadoop.metrics2.MetricsInfo;
 
