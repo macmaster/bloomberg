@@ -4,7 +4,6 @@ import java.io.Closeable;
 import java.io.IOException;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Connection;
@@ -24,12 +23,6 @@ import org.apache.hadoop.hbase.util.Bytes;
  */
 public class LocationTable implements Closeable {
 	
-	public static boolean AUTO_FLUSH = true;
-	
-	// configuration files.
-	public static final Path HBASE_CONF = new Path("/home/hadoop/hbase-1.3.1/conf", "hbase-site.xml");
-	public static final Path HADOOP_CONF = new Path("/home/hadoop/hadoop-2.8.0/etc/hadoop", "core-site.xml");
-	
 	// HBase table connection.
 	private static final TableName TABLE_NAME = TableName.valueOf("Locations");
 	private Table table;
@@ -43,8 +36,6 @@ public class LocationTable implements Closeable {
 	 */
 	public LocationTable() throws IOException {
 		config = HBaseConfiguration.create();
-		config.addResource(HBASE_CONF);
-		config.addResource(HADOOP_CONF);
 		open();
 	}
 	
@@ -62,7 +53,6 @@ public class LocationTable implements Closeable {
 		put.addColumn(Bytes.toBytes("meta"), Bytes.toBytes("longitude"), Bytes.toBytes(location.getLongitude()));
 		put.addColumn(Bytes.toBytes("meta"), Bytes.toBytes("latitude"), Bytes.toBytes(location.getLatitude()));
 		table.put(put);
-		
 	}
 	
 	/**

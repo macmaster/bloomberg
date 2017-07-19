@@ -174,7 +174,6 @@ public class TestConsoleSink {
 	
 	private void collectMetricsSample(Class<?>[] metricsClasses) throws Exception {
 		metricsSystem = new MetricsSystemImpl(prefix);
-		
 		for (Class<?> metric : metricsClasses) {
 			metricsSystem.register(metric.newInstance());
 		}

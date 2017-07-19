@@ -51,6 +51,4 @@ public class HBaseSource implements MetricsSource {
 		// MetricsRecordBuilder rb = collector.addRecord(HBaseMetrics).setContext("jvm").tag(ProcessName, processName).tag(SessionId, sessionId);		
 	}
 	
-	
-	
 }

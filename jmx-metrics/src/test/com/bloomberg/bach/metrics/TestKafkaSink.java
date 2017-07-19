@@ -111,7 +111,7 @@ public class TestKafkaSink {
 		//		PipedOutputStream outputStream = new PipedOutputStream(inputStream);
 		//		reader = new BufferedReader(new InputStreamReader(inputStream));
 		//		writer = new PrintStream(outputStream);
-		//		console = System.out;
+		console = System.out;
 		//		System.setOut(writer); // redirects System.out to test pipedInputStream.
 	}
 	
@@ -121,7 +121,7 @@ public class TestKafkaSink {
 	 */
 	@Test
 	public void testConsoleSink() throws Exception {
-		//		console.format("running %s%n", testName.getMethodName());
+		console.format("running %s%n", testName.getMethodName());
 		//		
 		//		buildConfiguration("%n - %v");
 		//		collectMetricsSample(new Class<?>[] { JvmMetrics.class, JunkMetrics.class });
@@ -143,8 +143,8 @@ public class TestKafkaSink {
 	 * Prints to the console with no exceptions. <br>
 	 */
 	@Test
-	public void testConsoleOutput() throws Exception {
-		//		console.format("running %s%n", testName.getMethodName());
+	public void testStreamOutput() throws Exception {
+		console.format("running %s%n", testName.getMethodName());
 		//		System.setOut(console);
 		//		
 		//		buildConfiguration("%n - %v");
