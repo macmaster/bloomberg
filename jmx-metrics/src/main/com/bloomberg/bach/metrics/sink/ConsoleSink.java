@@ -69,6 +69,8 @@ public class ConsoleSink implements MetricsSink, Closeable {
 			metricsString = replaceMetricString(formatString, metric.name(), metric.description(), metric.value().toString());
 			System.out.format("\t%s%n", metricsString);
 		}
+
+		System.out.println("\n");
 	}
 	
 	@Override

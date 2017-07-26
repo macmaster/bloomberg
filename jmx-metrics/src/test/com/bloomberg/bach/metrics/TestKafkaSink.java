@@ -19,15 +19,11 @@
 
 package com.bloomberg.bach.metrics;
 
-import static org.junit.Assert.assertTrue;
-
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.io.PrintStream;
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
@@ -37,149 +33,152 @@ import org.apache.hadoop.metrics2.annotation.Metric.Type;
 import org.apache.hadoop.metrics2.annotation.Metrics;
 import org.apache.hadoop.metrics2.impl.MetricsSystemImpl;
 import org.apache.hadoop.metrics2.lib.DefaultMetricsSystem;
+import org.apache.kafka.clients.producer.MockProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
 
-import com.bloomberg.bach.metrics.sink.ConsoleSink;
+import com.bloomberg.bach.metrics.sink.KafkaSink;
 
 /**
  * Tests the KafkaSink. <br>
- * TODO: Description.
  */
 public class TestKafkaSink {
-	
-	// configuration file
-	private String prefix = "test";
-	private File configFile = new File(String.format("hadoop-metrics2-%s.properties", prefix));
-	
-	// redirection io streams
-	private BufferedReader reader;
-	private PrintStream writer;
-	private PrintStream console;
-	
-	@Rule // junit test name
-	public TestName testName = new TestName();
-	
-	@Metrics(name = "jvmMetricsRecord", context = "TestKafkaSink")
-	public static class JvmMetrics {
-		
-		private static Runtime runtime = Runtime.getRuntime();
-		
-		@Metric(value = { "freeMemory", "free memory in the jvm" }, type = Type.GAUGE)
-		long freeMemory() {
-			return runtime.freeMemory();
-		}
-		
-		@Metric(value = { "maxMemory", "max memory in the jvm" }, type = Type.GAUGE)
-		long maxMemory() {
-			return runtime.maxMemory();
-		}
-		
-		@Metric(value = { "totalMemory", "total memory in the jvm" }, type = Type.GAUGE)
-		long getTotalMemory() {
-			return runtime.totalMemory();
-		}
-		
-	}
-	
-	@Metrics(name = "junkMetricsRecord", context = "TestKafkaSink")
-	public static class JunkMetrics {
-		
-		@Metric(value = { "StringTag", "a simple string metric" }, type = Type.TAG)
-		String stringTag() {
-			return "testing the kafka sink ...";
-		}
-		
-		@Metric(value = { "metric1", "a simple gauge" }, type = Type.GAUGE)
-		long metric1() {
-			return -7;
-		}
-		
-		@Metric(value = { "metric2", "a simple counter" }, type = Type.COUNTER)
-		long metric2() {
-			return 8675309;
-		}
-		
-	}
-	
-	@Before
-	public void setUp() throws IOException {
-		//		PipedInputStream inputStream = new PipedInputStream();
-		//		PipedOutputStream outputStream = new PipedOutputStream(inputStream);
-		//		reader = new BufferedReader(new InputStreamReader(inputStream));
-		//		writer = new PrintStream(outputStream);
-		console = System.out;
-		//		System.setOut(writer); // redirects System.out to test pipedInputStream.
-	}
-	
-	/**
-	 * Verifies correct console output for metrics reporting. <br>
-	 * Output is redirected from std.out through piped input and output streams.
-	 */
-	@Test
-	public void testConsoleSink() throws Exception {
-		console.format("running %s%n", testName.getMethodName());
-		//		
-		//		buildConfiguration("%n - %v");
-		//		collectMetricsSample(new Class<?>[] { JvmMetrics.class, JunkMetrics.class });
-		//		
-		//		writer.close();
-		//		String line = "", buffer = "";
-		//		StringBuilder builder = new StringBuilder();
-		//		while ((line = reader.readLine()) != null) {
-		//			builder.append(line + "\n");
-		//		} // build buffered output
-		//		buffer = builder.toString();
-		//		
-		//		assertTrue(buffer.contains("StringTag - testing the console sink ..."));
-		//		assertTrue(buffer.contains("metric1 - -7"));
-		//		assertTrue(buffer.contains("metric2 - 8675309"));
-	}
-	
-	/**
-	 * Prints to the console with no exceptions. <br>
-	 */
-	@Test
-	public void testStreamOutput() throws Exception {
-		console.format("running %s%n", testName.getMethodName());
-		//		System.setOut(console);
-		//		
-		//		buildConfiguration("%n - %v");
-		//		collectMetricsSample(new Class<?>[] { JvmMetrics.class, JunkMetrics.class });
-	}
-	
-	@After
-	public void tearDown() throws IOException {
-		//		reader.close();
-		//		writer.close();
-		//		System.setOut(console);
-		//		configFile.delete();
-	}
-	
-	private void buildConfiguration(String formatString) throws ConfigurationException {
-		PropertiesConfiguration config = new PropertiesConfiguration();
-		config.addProperty("*.period", 10000); // long to avoid automatic sampling.
-		config.addProperty("test.sink.kafka.class", ConsoleSink.class.getName());
-		// config.addProperty("test.sink.console.format", formatString);
-		config.save(configFile);
-	}
-	
-	private void collectMetricsSample(Class<?>[] metricsClasses) throws Exception {
-		//		MetricsSystem metricsSystem = new MetricsSystemImpl();
-		//		metricsSystem.init(prefix);
-		//		for (Class<?> metric : metricsClasses) {
-		//			metricsSystem.register(metric.newInstance());
-		//		}
-		//		
-		//		// sample metrics.
-		//		metricsSystem.start();
-		//		metricsSystem.publishMetricsNow();
-		//		metricsSystem.stop();
-		//		metricsSystem.shutdown();
-		//		DefaultMetricsSystem.shutdown();
-	}
-	
+
+  // configuration file
+  private String prefix = "test";
+  private File configFile = new File(String.format("hadoop-metrics2-%s.properties", prefix));
+
+  // kafka metrics testing
+  private KafkaSink kafkaSink;
+  private MetricsSystem metricsSystem;
+  private MockProducer<String, String> producer;
+
+  @Rule // junit test name
+  public TestName testName = new TestName();
+
+  @Metrics(name = "jvmMetricsRecord", context = "TestKafkaSink")
+  public static class JvmMetrics {
+
+    private static Runtime runtime = Runtime.getRuntime();
+
+    @Metric(value = { "freeMemory", "free memory in the jvm" }, type = Type.GAUGE)
+    long freeMemory() {
+      return runtime.freeMemory();
+    }
+
+    @Metric(value = { "maxMemory", "max memory in the jvm" }, type = Type.GAUGE)
+    long maxMemory() {
+      return runtime.maxMemory();
+    }
+
+    @Metric(value = { "totalMemory", "total memory in the jvm" }, type = Type.GAUGE)
+    long getTotalMemory() {
+      return runtime.totalMemory();
+    }
+
+  }
+
+  @Metrics(name = "junkMetricsRecord", context = "TestKafkaSink")
+  public static class JunkMetrics {
+    public static String STRING_TAG = "testing the kafka sink ...";
+    public static Integer METRIC1 = -7, METRIC2 = 8675309;
+
+    @Metric(value = { "StringTag", "a simple string metric" }, type = Type.TAG)
+    String stringTag() {
+      return STRING_TAG;
+    }
+
+    @Metric(value = { "metric1", "a simple gauge" }, type = Type.GAUGE)
+    long metric1() {
+      return METRIC1;
+    }
+
+    @Metric(value = { "metric2", "a simple counter" }, type = Type.COUNTER)
+    long metric2() {
+      return METRIC2;
+    }
+
+  }
+
+  @Before
+  public void setUp() throws Exception {
+    this.buildConfiguration(); // setup Kafka configuration. 
+    this.kafkaSink = new KafkaSink();
+    this.kafkaSink.topic = "testKafkaSink";
+    this.metricsSystem = new MetricsSystemImpl(prefix);
+    this.producer = new MockProducer<String, String>(true, new StringSerializer(), new StringSerializer());
+  }
+
+  @After
+  public void tearDown() throws IOException {
+    configFile.delete();
+    metricsSystem.shutdown();
+    DefaultMetricsSystem.shutdown();
+  }
+
+  /**
+   * Verifies correct Kafka producer output for metrics reporting. <br>
+   */
+  @Test
+  public void testKafkaSink() throws Exception {
+    registerMetrics(new Class<?>[] { JunkMetrics.class });
+    collectMetricsSample();
+
+    List<ProducerRecord<String, String>> history = this.producer.history();
+    List<ProducerRecord<String, String>> expected = Arrays.asList(
+        new ProducerRecord<String, String>("testKafkaSink", "TestKafkaSink.StringTag", JunkMetrics.STRING_TAG),
+        new ProducerRecord<String, String>("testKafkaSink", "TestKafkaSink.metric1", JunkMetrics.METRIC1.toString()),
+        new ProducerRecord<String, String>("testKafkaSink", "TestKafkaSink.metric2", JunkMetrics.METRIC2.toString()));
+
+    Assert.assertTrue(history.containsAll(expected));
+    // Assert.assertEquals(expected, history);
+  }
+
+  /**
+   * Test to see that the KafkaSink can report metrics more than once. <br>
+   */
+  @Test
+  public void testProducerOutput() throws Exception {
+    registerMetrics(new Class<?>[] { JvmMetrics.class });
+    collectMetricsSample();
+    collectMetricsSample();
+  }
+
+  private void buildConfiguration() throws ConfigurationException {
+    PropertiesConfiguration config = new PropertiesConfiguration();
+    config.addProperty("*.period", 10000); // long to avoid automatic sampling.
+    config.addProperty("test.sink.kafka.topic", "testKafkaSink");
+    config.save(configFile);
+  }
+
+  private void registerMetrics(Class<?>[] metricsClasses) throws Exception {
+    for (Class<?> metric : metricsClasses) {
+      metricsSystem.register(metric.newInstance());
+    }
+  }
+
+  // substitute the real producer for the mock producer.
+  private void swapSinks() throws Exception {
+    Class<?> sinkClass = this.kafkaSink.getClass();
+    Field producerField = sinkClass.getDeclaredField("producer");
+    producerField.setAccessible(true);
+    producerField.set(this.kafkaSink, this.producer);
+  }
+
+  private void collectMetricsSample() throws Exception {
+    // sample metrics.
+    metricsSystem.start();
+    metricsSystem.register("testKafkaSink", "kafka sink for testing", kafkaSink);
+    this.swapSinks();
+    metricsSystem.publishMetricsNow();
+    metricsSystem.unregisterSource("testKafkaSink");
+    metricsSystem.stop();
+  }
+
 }

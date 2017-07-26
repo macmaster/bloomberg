@@ -34,6 +34,7 @@ import org.apache.hadoop.metrics2.MetricsRecord;
 import org.apache.hadoop.metrics2.MetricsSink;
 import org.apache.hadoop.metrics2.MetricsTag;
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
 /**
@@ -47,9 +48,9 @@ public class KafkaSink implements MetricsSink, Closeable {
 	public static final String CONFIG_FILE_KEY = "file";
 	public static final String TOPIC_KEY = "topic";
 	
-	private String topic = "";
+	public String topic = "";
 	private Properties properties = new Properties();
-	private KafkaProducer<String, String> producer = null;
+	private Producer<String, String> producer = null;
 	
 	@Override
 	public void init(SubsetConfiguration conf) {
@@ -88,13 +89,17 @@ public class KafkaSink implements MetricsSink, Closeable {
 		
 		// print tags.
 		for (MetricsTag tag : record.tags()) {
-			producerRecord = new ProducerRecord<String, String>(topic, tag.name(), tag.value());
+      String key = String.format("%s.%s", record.context(), tag.name());
+      String value = tag.value();
+			producerRecord = new ProducerRecord<String, String>(topic, key, value);
 			producer.send(producerRecord);
 		}
 		
 		// print metrics.
 		for (AbstractMetric metric : record.metrics()) {
-			producerRecord = new ProducerRecord<String, String>(topic, metric.name(), metric.value().toString());
+		  String key = String.format("%s.%s", record.context(), metric.name());
+		  String value = metric.value().toString();
+			producerRecord = new ProducerRecord<String, String>(topic, key, value);
 			producer.send(producerRecord);
 		}
 		
