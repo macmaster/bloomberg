@@ -1,4 +1,3 @@
-
 /**
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -47,12 +46,13 @@ import com.bloomberg.bach.metrics.sink.KafkaSink;
 
 /**
  * Tests the KafkaSink. <br>
+ * The KafkaSink acts as a Producer, so we can mock it with a MockProducer.
  */
 public class TestKafkaSink {
 
   // configuration file
-  private String prefix = "test";
-  private File configFile = new File(String.format("hadoop-metrics2-%s.properties", prefix));
+  public static String TEST_PREFIX = "test", TEST_TOPIC = "testKafkaSink";
+  private File configFile = new File(String.format("hadoop-metrics2-%s.properties", TEST_PREFIX));
 
   // kafka metrics testing
   private KafkaSink kafkaSink;
@@ -111,7 +111,7 @@ public class TestKafkaSink {
     this.buildConfiguration(); // setup Kafka configuration. 
     this.kafkaSink = new KafkaSink();
     this.kafkaSink.topic = "testKafkaSink";
-    this.metricsSystem = new MetricsSystemImpl(prefix);
+    this.metricsSystem = new MetricsSystemImpl(TEST_PREFIX);
     this.producer = new MockProducer<String, String>(true, new StringSerializer(), new StringSerializer());
   }
 
@@ -123,7 +123,7 @@ public class TestKafkaSink {
   }
 
   /**
-   * Verifies correct Kafka producer output for metrics reporting. <br>
+   * Verify correct Kafka producer output for metrics reporting. <br>
    */
   @Test
   public void testKafkaSink() throws Exception {
@@ -141,7 +141,7 @@ public class TestKafkaSink {
   }
 
   /**
-   * Test to see that the KafkaSink can report metrics more than once. <br>
+   * Check if KafkaSink can report metrics more than once. <br>
    */
   @Test
   public void testProducerOutput() throws Exception {
@@ -150,11 +150,26 @@ public class TestKafkaSink {
     collectMetricsSample();
   }
 
-  private void buildConfiguration() throws ConfigurationException {
-    PropertiesConfiguration config = new PropertiesConfiguration();
-    config.addProperty("*.period", 10000); // long to avoid automatic sampling.
-    config.addProperty("test.sink.kafka.topic", "testKafkaSink");
-    config.save(configFile);
+  /**
+   * Substitute the real producer for the mock producer. <br>
+   */
+  private void swapSinks() throws Exception {
+    Class<?> sinkClass = this.kafkaSink.getClass();
+    Field producerField = sinkClass.getDeclaredField("producer");
+    producerField.setAccessible(true);
+    producerField.set(this.kafkaSink, this.producer);
+  }
+
+  /**
+   * Collect and report a single metrics sample. <br>
+   */
+  private void collectMetricsSample() throws Exception {
+    metricsSystem.start();
+    metricsSystem.register("testKafkaSink", "kafka sink for testing", kafkaSink);
+    this.swapSinks();
+    metricsSystem.publishMetricsNow();
+    metricsSystem.unregisterSource("testKafkaSink");
+    metricsSystem.stop();
   }
 
   private void registerMetrics(Class<?>[] metricsClasses) throws Exception {
@@ -163,22 +178,11 @@ public class TestKafkaSink {
     }
   }
 
-  // substitute the real producer for the mock producer.
-  private void swapSinks() throws Exception {
-    Class<?> sinkClass = this.kafkaSink.getClass();
-    Field producerField = sinkClass.getDeclaredField("producer");
-    producerField.setAccessible(true);
-    producerField.set(this.kafkaSink, this.producer);
-  }
-
-  private void collectMetricsSample() throws Exception {
-    // sample metrics.
-    metricsSystem.start();
-    metricsSystem.register("testKafkaSink", "kafka sink for testing", kafkaSink);
-    this.swapSinks();
-    metricsSystem.publishMetricsNow();
-    metricsSystem.unregisterSource("testKafkaSink");
-    metricsSystem.stop();
+  private void buildConfiguration() throws ConfigurationException {
+    PropertiesConfiguration config = new PropertiesConfiguration();
+    config.addProperty("*.period", 10000); // long to avoid automatic sampling.
+    config.addProperty("test.sink.kafka.topic", TEST_TOPIC);
+    config.save(configFile);
   }
 
 }

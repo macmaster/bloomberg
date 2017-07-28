@@ -74,11 +74,8 @@
 			<artifactId>hadoop-common</artifactId>
 			<version>${hadoop.version}</version>
 		</dependency>
-		<!-- <dependency>
-			<groupId>org.apache.hadoop</groupId>
-			<artifactId>hadoop-hdfs</artifactId>
-			<version>${hadoop.version}</version>
-		</dependency> -->
+		<!-- <dependency> <groupId>org.apache.hadoop</groupId> <artifactId>hadoop-hdfs</artifactId> 
+			<version>${hadoop.version}</version> </dependency> -->
 
 		<dependency>
 			<groupId>org.apache.hbase</groupId>
@@ -92,18 +89,9 @@
 			<version>20170516</version>
 		</dependency>
 
-		<!--
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>4.5.3</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>fluent-hc</artifactId>
-			<version>4.5.3</version>
-		</dependency> -->
+		<!-- <dependency> <groupId>org.apache.httpcomponents</groupId> <artifactId>httpclient</artifactId> 
+			<version>4.5.3</version> </dependency> <dependency> <groupId>org.apache.httpcomponents</groupId> 
+			<artifactId>fluent-hc</artifactId> <version>4.5.3</version> </dependency> -->
 
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>

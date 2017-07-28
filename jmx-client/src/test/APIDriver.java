@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.lang.management.ManagementFactory;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -224,11 +222,11 @@ public class APIDriver {
     System.out.format("MBeans: %s%n", mbeanString);
   }
   
-  private static void printClassPath() {
-    URLClassLoader classLoader = ((URLClassLoader)(ClassLoader.getSystemClassLoader()));
-    for(URL url : classLoader.getURLs()){
-      System.out.println(url);
-    }
-  }
+  //  private static void printClassPath() {
+  //    URLClassLoader classLoader = ((URLClassLoader)(ClassLoader.getSystemClassLoader()));
+  //    for(URL url : classLoader.getURLs()){
+  //      System.out.println(url);
+  //    }
+  //  }
 
 }

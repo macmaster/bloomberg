@@ -37,60 +37,60 @@ import org.apache.hadoop.metrics2.MetricsTag;
 @InterfaceAudience.Public
 @InterfaceStability.Evolving
 public class ConsoleSink implements MetricsSink, Closeable {
-	
-	public static final String FORMAT_KEY = "format";
-	private String formatString = "";
-	
-	@Override
-	public void init(SubsetConfiguration conf) {
-		formatString = conf.getString(FORMAT_KEY, "%n : %v");
-	}
-	
-	@Override
-	public void close() throws IOException {
-		// Do not close System.out here. 
-	}
-	
-	@Override
-	public void putMetrics(MetricsRecord record) {
-		System.out.format("%s: %s %n", record.name(), new Date(record.timestamp()));
-		String metricsString = "";
-		
-		// print tags.
-		System.out.println("tags:");
-		for (MetricsTag tag : record.tags()) {
-			metricsString = replaceMetricString(formatString, tag.name(), tag.description(), tag.value());
-			System.out.format("\t%s%n", metricsString);
-		}
-		
-		// print metrics.
-		System.out.println("metrics:");
-		for (AbstractMetric metric : record.metrics()) {
-			metricsString = replaceMetricString(formatString, metric.name(), metric.description(), metric.value().toString());
-			System.out.format("\t%s%n", metricsString);
-		}
 
-		System.out.println("\n");
-	}
-	
-	@Override
-	public void flush() {
-		System.out.flush();
-	}
-	
-	/**
-	 * build metrics string from token replacement. <br>
-	 * format string specifiers: <br>
-	 * %n = name <br>
-	 * %d = description <br>
-	 * %v = value <br>
-	 */
-	private String replaceMetricString(String formatString, String name, String description, String value) {
-		String output = formatString;
-		output = output.replaceAll("%n", Matcher.quoteReplacement(name));
-		output = output.replaceAll("%d", Matcher.quoteReplacement(description));
-		output = output.replaceAll("%v", Matcher.quoteReplacement(value));
-		return output;
-	}
-	
+  public static final String FORMAT_KEY = "format";
+  private String formatString = "";
+
+  @Override
+  public void init(SubsetConfiguration conf) {
+    formatString = conf.getString(FORMAT_KEY, "%n : %v");
+  }
+
+  @Override
+  public void close() throws IOException {
+    // Do not close System.out here. 
+  }
+
+  @Override
+  public void flush() {
+    System.out.flush();
+  }
+
+  @Override
+  public void putMetrics(MetricsRecord record) {
+    System.out.format("%s: %s %n", record.name(), new Date(record.timestamp()));
+    String metricsString = "";
+
+    // print tags.
+    System.out.println("tags:");
+    for (MetricsTag tag : record.tags()) {
+      metricsString = replaceMetricString(formatString, tag.name(), tag.description(), tag.value());
+      System.out.format("\t%s%n", metricsString);
+    }
+
+    // print metrics.
+    System.out.println("metrics:");
+    for (AbstractMetric metric : record.metrics()) {
+      metricsString = replaceMetricString(formatString, metric.name(), metric.description(), metric.value().toString());
+      System.out.format("\t%s%n", metricsString);
+    }
+
+    System.out.print("\n");
+  }
+
+  /**
+   * build metrics string from token replacement. <br>
+   * format string specifiers: <br>
+   * %n = name <br>
+   * %d = description <br>
+   * %v = value <br>
+   */
+  private String replaceMetricString(String formatString, String name, String description, String value) {
+    String output = formatString;
+    output = output.replaceAll("%n", Matcher.quoteReplacement(name));
+    output = output.replaceAll("%d", Matcher.quoteReplacement(description));
+    output = output.replaceAll("%v", Matcher.quoteReplacement(value));
+    return output;
+  }
+
 }
