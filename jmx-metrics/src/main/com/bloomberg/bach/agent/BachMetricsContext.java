@@ -2,7 +2,6 @@ package com.bloomberg.bach.agent;
 
 import java.io.IOException;
 
-import org.apache.hadoop.metrics2.MetricsSystem;
 import org.apache.hadoop.metrics2.lib.DefaultMetricsSystem;
 
 /**
@@ -17,21 +16,14 @@ public class BachMetricsContext {
 
   // metrics reporting via JMX and metrics2
   private static BachMetricsServer server = null;
-  private static MetricsSystem system = DefaultMetricsSystem.initialize("client");
-
-  private final String processName, sessionId;
 
   private BachMetricsContext() {
-    this.sessionId = this.processName = "client";
-    // JvmMetrics.create(processName, sessionId, system);
-    // HBaseSource.create(processName, sessionId, system);
+    DefaultMetricsSystem.initialize("client");
   }
 
   private static synchronized BachMetricsContext registerContext() {
-    if (INSTANCE == null) {
-      INSTANCE = new BachMetricsContext();
-    } // return singleton context.
-    return INSTANCE;
+    // return singleton context.
+    return (INSTANCE == null) ? (INSTANCE = new BachMetricsContext()) : INSTANCE;
   }
 
   /**
@@ -45,14 +37,13 @@ public class BachMetricsContext {
    * Start the metrics JSON service on the given host and port. <br>
    */
   public static void start(String host, Integer port) throws IOException {
+    // System.getProperties().list(System.out);		
     server = new BachMetricsServer(host, port);
     server.start();
 
     // initialize metrics system.
     BachMetricsContext.registerContext();
-    System.out.format("Bach Metrics Context: started on  <%s, %d> %n", server.getHost(),
-        server.getPort());
-    // System.getProperties().list(System.out);		
+    System.out.format("Bach Metrics Context: started on  <%s, %d> %n", server.getHost(), server.getPort());
   }
 
   /**

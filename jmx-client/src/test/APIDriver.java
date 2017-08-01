@@ -71,11 +71,9 @@ public class APIDriver {
   public void testMetrics() throws Exception {
     // record locationStrings in HBase Location table.
     LocationTable metricsTable = new LocationTable();
-    for (String filename : new String[] { "texas.txt", "hawaii.txt", "new_york.txt", "wyoming.txt",
-        "hawaii.txt" }) {
+    for (String filename : new String[] { "texas.txt", "hawaii.txt", "new_york.txt", "wyoming.txt", "hawaii.txt" }) {
       filename = "input/" + filename;
-      try (FileReader file = new FileReader(filename);
-          BufferedReader reader = new BufferedReader(file);) {
+      try (FileReader file = new FileReader(filename); BufferedReader reader = new BufferedReader(file);) {
 
         String locationString = "";
         while ((locationString = reader.readLine()) != null) {
@@ -151,7 +149,6 @@ public class APIDriver {
 
   }
 
-  // @Ignore
   @Test
   public void testLocationTableGet() throws IOException {
 
@@ -211,17 +208,15 @@ public class APIDriver {
    */
   private static void printMBeans() throws MalformedObjectNameException {
     MBeanServer server = ManagementFactory.getPlatformMBeanServer();
-    // TODO : query all mbeans with format: com.yammer.metrics.*.
     // build a MetricsSource from the reported JMX bean server.
     Set<ObjectInstance> mbeans = server.queryMBeans(new ObjectName("*hbase*:*"), null);
     //mbeans.removeAll(server.queryMBeans(null, )); // set filter
-
-    String mbeanString = mbeans.stream().map(ObjectInstance::getObjectName)
-        .map(ObjectName::toString).collect(Collectors.joining("\n"));
+    String mbeanString = mbeans.stream().map(ObjectInstance::getObjectName).map(ObjectName::toString)
+        .collect(Collectors.joining("\n"));
 
     System.out.format("MBeans: %s%n", mbeanString);
   }
-  
+
   //  private static void printClassPath() {
   //    URLClassLoader classLoader = ((URLClassLoader)(ClassLoader.getSystemClassLoader()));
   //    for(URL url : classLoader.getURLs()){
