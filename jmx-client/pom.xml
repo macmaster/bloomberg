@@ -31,6 +31,39 @@
 					<downloadJavadocs>true</downloadJavadocs>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.0.2</version>
+				<configuration>
+					<archive>
+						<manifestEntries>
+							<Main-Class>test.APIDriver</Main-Class>
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.0.0</version>
+				<executions>
+				  <execution>
+					<phase>package</phase>
+					<goals>
+					  <goal>shade</goal>
+					</goals>
+					<configuration>
+						<createDependencyReducedPom>false</createDependencyReducedPom>
+					  <artifactSet>
+					  </artifactSet>
+					</configuration>
+				  </execution>
+				</executions>
+			</plugin>
+
 		</plugins>
 	</build>
 
@@ -63,11 +96,12 @@
 
 	<dependencies>
 
-		<dependency>
+
+		<!-- <dependency>
 			<groupId>com.bloomberg.bach</groupId>
 			<artifactId>metrics</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
+		</dependency> -->
 
 		<dependency>
 			<groupId>org.apache.hadoop</groupId>

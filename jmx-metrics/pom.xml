@@ -42,18 +42,36 @@
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>3.0.2</version>
 				<configuration>
+					<archive>
+						<manifestEntries>
+							<Premain-Class>com.bloomberg.bach.agent.BachMetricsContext</Premain-Class>
+						</manifestEntries>
+					</archive>
 				</configuration>
 			</plugin>
 
-
 			<!-- jar shading for complete deployment -->
-			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-shade-plugin</artifactId> 
-				<version>3.0.0</version> <executions> <execution> <phase>package</phase> 
-				<goals> <goal>shade</goal> </goals> <configuration> <artifactSet> <includes> 
-				<include>org.jolokia:jolokia-jvm:*</include> <include>org.jolokia:jolokia-core:*</include> 
-				<include>com.googlecode.json-simple:json-simple:*</include> </includes> </artifactSet> 
-				<createDependencyReducedPom>false</createDependencyReducedPom> </configuration> 
-				</execution> </executions> </plugin> -->
+			<plugin> 
+				<groupId>org.apache.maven.plugins</groupId> 
+				<artifactId>maven-shade-plugin</artifactId> 
+				<version>3.0.0</version> 
+				<executions> <execution> 
+						<phase>package</phase> 
+						<goals> 
+							<goal>shade</goal> 
+						</goals> 
+						<configuration> 
+							<artifactSet> 
+								<includes> 
+									<include>org.jolokia:jolokia-jvm:*</include> 
+									<include>org.jolokia:jolokia-core:*</include> 
+									<include>com.googlecode.json-simple:json-simple:*</include>
+							</includes> 
+						</artifactSet> 
+						<createDependencyReducedPom>false</createDependencyReducedPom> 
+						</configuration> 
+				</execution> </executions> 
+			</plugin> 
 
 		</plugins>
 	</build>
@@ -104,6 +122,7 @@
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<version>2.2.4</version>
+			<scope>test</scope>
 		</dependency>
 
 		<dependency>

@@ -21,7 +21,6 @@ import org.apache.hadoop.hbase.client.metrics.ScanMetrics;
 import org.json.JSONObject;
 import org.junit.Test;
 
-import com.bloomberg.bach.agent.BachMetricsContext;
 import com.bloomberg.bach.hbase.Location;
 import com.bloomberg.bach.hbase.LocationTable;
 import com.bloomberg.bach.hdfs.HDFSFile;
@@ -37,7 +36,6 @@ public class APIDriver {
   public static void main(String[] args) throws Exception {
     // BasicConfigurator.configure();
     APIDriver driver = new APIDriver();
-    BachMetricsContext.start();
 
     List<String> commands = new ArrayList<String>();
     for (String command : args) {
