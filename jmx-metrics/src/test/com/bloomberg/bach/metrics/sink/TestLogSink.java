@@ -46,7 +46,7 @@ import org.slf4j.Logger;
 public class TestLogSink {
 
   // configuration file
-  public static String TEST_PREFIX = "test";
+  protected final static String TEST_PREFIX = "test";
   private File configFile;
 
   // Metrics System.
@@ -55,44 +55,50 @@ public class TestLogSink {
   @Rule // junit test name
   public TestName testName = new TestName();
 
+  /**
+   * Simple jvm-based metrics class for testing log sink.
+   */
   @Metrics(name = "jvmMetricsRecord", context = "TestConsoleSink")
   public static class JvmMetrics {
 
     private static Runtime runtime = Runtime.getRuntime();
 
-    @Metric(value = { "freeMemory", "free memory in the jvm" }, type = Type.GAUGE)
+    @Metric(value = {"freeMemory", "free memory in the jvm"}, type = Type.GAUGE)
     long freeMemory() {
       return runtime.freeMemory();
     }
 
-    @Metric(value = { "maxMemory", "max memory in the jvm" }, type = Type.GAUGE)
+    @Metric(value = {"maxMemory", "max memory in the jvm"}, type = Type.GAUGE)
     long maxMemory() {
       return runtime.maxMemory();
     }
 
-    @Metric(value = { "totalMemory", "total memory in the jvm" }, type = Type.GAUGE)
+    @Metric(value = {"totalMemory", "total jvm memory"}, type = Type.GAUGE)
     long getTotalMemory() {
       return runtime.totalMemory();
     }
 
   }
 
+  /**
+   * Simple junk metrics class for testing log sink.
+   */
   @Metrics(name = "junkMetricsRecord", context = "TestConsoleSink")
   public static class JunkMetrics {
-    public static String STRING_TAG = "testing the log sink ...";
-    public static Integer METRIC1 = -7, METRIC2 = 8675309;
+    private final static String STRING_TAG = "testing the log sink ...";
+    private final static Integer METRIC1 = -7, METRIC2 = 8675309;
 
-    @Metric(value = { "StringTag", "a simple string metric" }, type = Type.TAG)
+    @Metric(value = {"StringTag", "a simple string metric"}, type = Type.TAG)
     String stringTag() {
       return STRING_TAG;
     }
 
-    @Metric(value = { "metric1", "a simple gauge" }, type = Type.GAUGE)
+    @Metric(value = {"metric1", "a simple gauge"}, type = Type.GAUGE)
     long metric1() {
       return METRIC1;
     }
 
-    @Metric(value = { "metric2", "a simple counter" }, type = Type.COUNTER)
+    @Metric(value = {"metric2", "a simple counter"}, type = Type.COUNTER)
     long metric2() {
       return METRIC2;
     }
@@ -102,7 +108,7 @@ public class TestLogSink {
   /**
    * Configuration file builder.
    */
-  public static class LogSinkConfiguration {
+  private static final class LogSinkConfiguration {
     private static final String SINK_PREFIX = "sink.log";
     private static final String PERIOD_KEY = "period";
     private static final String CLASS_KEY = "class";
@@ -115,12 +121,13 @@ public class TestLogSink {
     }
 
     private LogSinkConfiguration() {
+      // period is long to avoid automatic sampling.
       config = new PropertiesConfiguration();
-      config.setProperty(configKey(PERIOD_KEY), 100000); // long to avoid automatic sampling.
+      config.setProperty(configKey(PERIOD_KEY), 100000);
       config.setProperty(configKey(CLASS_KEY), LogSink.class.getName());
       config.setProperty(configKey(LogSink.FORMAT_KEY), "%n : %v");
       config.setProperty(configKey(LogSink.LEVEL_KEY), "WARN");
-      config.setProperty(configKey(LogSink.PREFIX_KEY), "\"\t\"");// long to avoid automatic sampling.
+      config.setProperty(configKey(LogSink.PREFIX_KEY), "\"\t\"");
     }
 
     public LogSinkConfiguration setFormat(String format) {
@@ -151,7 +158,8 @@ public class TestLogSink {
   @Before
   public void setUp() throws IOException {
     this.metricsSystem = new MetricsSystemImpl(TEST_PREFIX);
-    this.configFile = new File(String.format("hadoop-metrics2-%s.properties", TEST_PREFIX));
+    this.configFile = new File(
+        String.format("hadoop-metrics2-%s.properties", TEST_PREFIX));
   }
 
   @After
@@ -174,8 +182,9 @@ public class TestLogSink {
     modifiersField.setInt(logField, logField.getModifiers() & ~Modifier.FINAL);
     logField.set(null, logger);
 
-    LogSinkConfiguration.build().setFormat("%n = %v").setLevel("WARN").save(configFile);
-    registerMetrics(new Class<?>[] { JvmMetrics.class, JunkMetrics.class });
+    LogSinkConfiguration.build().setFormat("%n = %v").setLevel("WARN")
+        .save(configFile);
+    registerMetrics(new Class<?>[] {JvmMetrics.class, JunkMetrics.class});
     collectMetricsSample();
 
     Mockito.verify(logger, Mockito.atLeast(3)).warn(Mockito.anyString());
@@ -187,8 +196,9 @@ public class TestLogSink {
    */
   @Test
   public void testSimpleLogOutput() throws Exception {
-    LogSinkConfiguration.build().setFormat("(%n\\, %v)").setLevel("WARN").save(configFile);
-    registerMetrics(new Class<?>[] { JvmMetrics.class, JunkMetrics.class });
+    LogSinkConfiguration.build().setFormat("(%n\\, %v)").setLevel("WARN")
+        .save(configFile);
+    registerMetrics(new Class<?>[] {JvmMetrics.class, JunkMetrics.class});
     collectMetricsSample();
   }
 

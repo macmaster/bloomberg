@@ -36,7 +36,13 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
 
 /**
- * A metrics sink that dumps to the console.
+ * A metrics sink that dumps to an slf4j log. <br>
+ * level : slf4j log level (WARN, TRACE, INFO, etc...) <br>
+ * prefix : printed before each formatted metric line. <br>
+ * format : format of metric line. <br>
+ * %n : name <br>
+ * %v : value <br>
+ * %d : description <br>
  */
 @InterfaceAudience.Public
 @InterfaceStability.Evolving
@@ -44,24 +50,23 @@ public class LogSink implements MetricsSink, Closeable {
 
   public static final Logger LOG = LoggerFactory.getLogger(LogSink.class);
   public static final String LEVEL_KEY = "level";
-  public static final String FORMAT_KEY = "format";
   public static final String PREFIX_KEY = "prefix";
-  public static final String JSON_KEY = "json";
+  public static final String FORMAT_KEY = "format";
 
   private Level level = null;
-  private String format = "";
   private String prefix = "";
+  private String format = "";
 
   @Override
   public void init(SubsetConfiguration conf) {
     this.level = Level.valueOf(conf.getString(LEVEL_KEY, "info"));
-    this.format = conf.getString(FORMAT_KEY, "%n : %v");
     this.prefix = conf.getString(PREFIX_KEY, "\t- ");
+    this.format = conf.getString(FORMAT_KEY, "%n : %v");
 
     // strip quotes
-    String quoteRegex = "(^\"|^\')|(\"$|\'$)";
-    this.format = this.format.replaceAll(quoteRegex, "");
+    String quoteRegex = "(^\"|\"$)|(^\'|\'$)";
     this.prefix = this.prefix.replaceAll(quoteRegex, "");
+    this.format = this.format.replaceAll(quoteRegex, "");
   }
 
   @Override
@@ -83,15 +88,16 @@ public class LogSink implements MetricsSink, Closeable {
     // compile tags.
     tags.append(String.format("TAGS:"));
     for (MetricsTag tag : record.tags()) {
-      line = replaceMetricString(format, tag.name(), tag.description(), tag.value());
+      line = replaceMetricString(format,
+          tag.name(), tag.description(), tag.value());
       tags.append(String.format("%n%s%s", prefix, line));
     }
 
     // compile metrics.
     metrics.append(String.format("METRICS:"));
     for (AbstractMetric metric : record.metrics()) {
-      line = replaceMetricString(format, metric.name(), metric.description(),
-          metric.value().toString());
+      line = replaceMetricString(format,
+          metric.name(), metric.description(), metric.value().toString());
       metrics.append(String.format("%n%s%s", prefix, line));
     }
 
@@ -108,8 +114,8 @@ public class LogSink implements MetricsSink, Closeable {
    * %d = description <br>
    * %v = value <br>
    */
-  private String replaceMetricString(String formatString, String name, String description,
-      String value) {
+  private String replaceMetricString(
+      String formatString, String name, String description, String value) {
     String output = formatString;
     output = output.replaceAll("%n", Matcher.quoteReplacement(name));
     output = output.replaceAll("%d", Matcher.quoteReplacement(description));
