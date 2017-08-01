@@ -22,7 +22,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 
-import org.apache.commons.configuration.SubsetConfiguration;
+import org.apache.commons.configuration2.SubsetConfiguration;
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability;
 import org.apache.hadoop.metrics2.MetricsException;
@@ -37,39 +37,39 @@ import com.bloomberg.bach.metrics.RecordHandler;
 @InterfaceAudience.Public
 @InterfaceStability.Evolving
 public class CustomSink implements MetricsSink, Closeable {
-	
-	public static final String CLASS_KEY = "class";
-	
-	private RecordHandler recordHandler;
-	
-	@Override
-	public void init(SubsetConfiguration conf) {
-		String className = conf.getString(CLASS_KEY, null);
-		
-		try { // attempt to instantiate custom record handler.	
-			Class<?> cls = Class.forName(className);
-			Constructor<?> constructor = cls.getDeclaredConstructor();
-			recordHandler = (RecordHandler) constructor.newInstance();
-			
-		} catch (Exception err) {
-			String errorMessage = String.format("Can't instantiate the custom sink class: %s", className);
-			throw new MetricsException(errorMessage);
-		}
-	}
-	
-	@Override
-	public void close() throws IOException {
-		recordHandler.close();
-	}
-	
-	@Override
-	public void putMetrics(MetricsRecord record) {
-		recordHandler.handleRecord(record);
-	}
-	
-	@Override
-	public void flush() {
-		recordHandler.flush();
-	}
-	
+
+  public static final String CLASS_KEY = "class";
+
+  private RecordHandler recordHandler;
+
+  @Override
+  public void init(SubsetConfiguration conf) {
+    String className = conf.getString(CLASS_KEY, null);
+
+    try { // attempt to instantiate custom record handler.	
+      Class<?> cls = Class.forName(className);
+      Constructor<?> constructor = cls.getDeclaredConstructor();
+      recordHandler = (RecordHandler) constructor.newInstance();
+
+    } catch (Exception err) {
+      String errorMessage = String.format("Can't instantiate the custom sink class: %s", className);
+      throw new MetricsException(errorMessage);
+    }
+  }
+
+  @Override
+  public void close() throws IOException {
+    recordHandler.close();
+  }
+
+  @Override
+  public void putMetrics(MetricsRecord record) {
+    recordHandler.handleRecord(record);
+  }
+
+  @Override
+  public void flush() {
+    recordHandler.flush();
+  }
+
 }

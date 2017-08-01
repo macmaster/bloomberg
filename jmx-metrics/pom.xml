@@ -7,7 +7,9 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<hadoop.version>2.7.3</hadoop.version>
+		<commons.version>2.0</commons.version>
+		<slf4j.version>1.7.25</slf4j.version>
+		<hadoop.version>3.0.0-beta1-SNAPSHOT</hadoop.version>
 		<jolokia.version>1.3.6</jolokia.version>
 		<kafka.version>0.11.0.0</kafka.version>
 	</properties>
@@ -31,7 +33,7 @@
 					<source>1.8</source>
 					<target>1.8</target>
 					<downloadSources>true</downloadSources>
-					<downloadJavadocs>true</downloadJavadocs>					
+					<downloadJavadocs>true</downloadJavadocs>
 				</configuration>
 			</plugin>
 
@@ -45,29 +47,13 @@
 
 
 			<!-- jar shading for complete deployment -->
-			<!-- <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<version>3.0.0</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-						<configuration>
-							<artifactSet>
-								<includes>
-									<include>org.jolokia:jolokia-jvm:*</include>
-									<include>org.jolokia:jolokia-core:*</include>
-									<include>com.googlecode.json-simple:json-simple:*</include>
-								</includes>
-							</artifactSet>
-							<createDependencyReducedPom>false</createDependencyReducedPom>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin> -->
+			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-shade-plugin</artifactId> 
+				<version>3.0.0</version> <executions> <execution> <phase>package</phase> 
+				<goals> <goal>shade</goal> </goals> <configuration> <artifactSet> <includes> 
+				<include>org.jolokia:jolokia-jvm:*</include> <include>org.jolokia:jolokia-core:*</include> 
+				<include>com.googlecode.json-simple:json-simple:*</include> </includes> </artifactSet> 
+				<createDependencyReducedPom>false</createDependencyReducedPom> </configuration> 
+				</execution> </executions> </plugin> -->
 
 		</plugins>
 	</build>
@@ -105,6 +91,31 @@
 			<artifactId>junit</artifactId>
 			<version>4.8.1</version>
 			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<version>1.8.5</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.2.4</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-configuration2</artifactId>
+			<version>${commons.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
 		</dependency>
 
 		<dependency>

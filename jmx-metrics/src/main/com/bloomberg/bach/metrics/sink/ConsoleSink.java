@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.regex.Matcher;
 
-import org.apache.commons.configuration.SubsetConfiguration;
+import org.apache.commons.configuration2.SubsetConfiguration;
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability;
 import org.apache.hadoop.metrics2.AbstractMetric;

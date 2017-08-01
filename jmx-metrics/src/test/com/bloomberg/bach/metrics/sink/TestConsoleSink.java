@@ -16,53 +16,55 @@
  * limitations under the License.
  */
 
-package com.bloomberg.bach.metrics;
+package com.bloomberg.bach.metrics.sink;
 
+import static org.junit.Assert.assertTrue;
+
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.List;
+import java.io.InputStreamReader;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.io.PrintStream;
 
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.hadoop.metrics2.MetricsSystem;
 import org.apache.hadoop.metrics2.annotation.Metric;
 import org.apache.hadoop.metrics2.annotation.Metric.Type;
 import org.apache.hadoop.metrics2.annotation.Metrics;
 import org.apache.hadoop.metrics2.impl.MetricsSystemImpl;
 import org.apache.hadoop.metrics2.lib.DefaultMetricsSystem;
-import org.apache.kafka.clients.producer.MockProducer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
 
-import com.bloomberg.bach.metrics.sink.KafkaSink;
-
 /**
- * Tests the KafkaSink. <br>
- * The KafkaSink acts as a Producer, so we can mock it with a MockProducer.
+ * Tests the ConsoleSink. <br>
+ * Redirects output from std.out (System.out) to verify console output.
  */
-public class TestKafkaSink {
+public class TestConsoleSink {
 
   // configuration file
-  public static String TEST_PREFIX = "test", TEST_TOPIC = "testKafkaSink";
-  private File configFile = new File(String.format("hadoop-metrics2-%s.properties", TEST_PREFIX));
+  public static String TEST_PREFIX = "test";
+  private File configFile;
 
-  // kafka metrics testing
-  private KafkaSink kafkaSink;
+  // redirection io streams
+  private BufferedReader reader;
+  private PrintStream writer;
+  private PrintStream console;
+
+  // Metrics System.
   private MetricsSystem metricsSystem;
-  private MockProducer<String, String> producer;
 
   @Rule // junit test name
   public TestName testName = new TestName();
 
-  @Metrics(name = "jvmMetricsRecord", context = "TestKafkaSink")
+  @Metrics(name = "jvmMetricsRecord", context = "TestConsoleSink")
   public static class JvmMetrics {
 
     private static Runtime runtime = Runtime.getRuntime();
@@ -84,9 +86,9 @@ public class TestKafkaSink {
 
   }
 
-  @Metrics(name = "junkMetricsRecord", context = "TestKafkaSink")
+  @Metrics(name = "junkMetricsRecord", context = "TestConsoleSink")
   public static class JunkMetrics {
-    public static String STRING_TAG = "testing the kafka sink ...";
+    public static String STRING_TAG = "testing the console sink ...";
     public static Integer METRIC1 = -7, METRIC2 = 8675309;
 
     @Metric(value = { "StringTag", "a simple string metric" }, type = Type.TAG)
@@ -107,57 +109,63 @@ public class TestKafkaSink {
   }
 
   @Before
-  public void setUp() throws Exception {
-    this.buildConfiguration(); // setup Kafka configuration. 
-    this.kafkaSink = new KafkaSink();
-    this.kafkaSink.topic = "testKafkaSink";
+  public void setUp() throws IOException {
     this.metricsSystem = new MetricsSystemImpl(TEST_PREFIX);
-    this.producer = new MockProducer<String, String>(true, new StringSerializer(), new StringSerializer());
+    this.configFile = new File(String.format("hadoop-metrics2-%s.properties", TEST_PREFIX));
+
+    PipedInputStream inputStream = new PipedInputStream();
+    PipedOutputStream outputStream = new PipedOutputStream(inputStream);
+    this.reader = new BufferedReader(new InputStreamReader(inputStream));
+    this.writer = new PrintStream(outputStream);
+    this.console = System.out;
+    System.setOut(this.writer); // redirects System.out to test pipedInputStream.
   }
 
   @After
   public void tearDown() throws IOException {
-    configFile.delete();
-    metricsSystem.shutdown();
+    System.setOut(this.console);
+    this.writer.close();
+    this.reader.close();
+
+    this.configFile.delete();
+    this.metricsSystem.shutdown();
     DefaultMetricsSystem.shutdown();
   }
 
   /**
-   * Verify correct Kafka producer output for metrics reporting. <br>
+   * Verifies correct console output for metrics reporting. <br>
+   * Output is redirected from std.out through piped input and output streams.
    */
   @Test
-  public void testKafkaSink() throws Exception {
-    registerMetrics(new Class<?>[] { JunkMetrics.class });
+  public void testConsoleSink() throws Exception {
+    buildConfiguration("%n - %v");
+    registerMetrics(new Class<?>[] { JvmMetrics.class, JunkMetrics.class });
     collectMetricsSample();
 
-    List<ProducerRecord<String, String>> history = this.producer.history();
-    List<ProducerRecord<String, String>> expected = Arrays.asList(
-        new ProducerRecord<String, String>("testKafkaSink", "TestKafkaSink.StringTag", JunkMetrics.STRING_TAG),
-        new ProducerRecord<String, String>("testKafkaSink", "TestKafkaSink.metric1", JunkMetrics.METRIC1.toString()),
-        new ProducerRecord<String, String>("testKafkaSink", "TestKafkaSink.metric2", JunkMetrics.METRIC2.toString()));
+    writer.close(); // close pipe
+    String line = "", buffer = "";
+    StringBuilder builder = new StringBuilder();
+    while ((line = reader.readLine()) != null) {
+      builder.append(line + "\n");
+    }
 
-    Assert.assertTrue(history.containsAll(expected));
-    // Assert.assertEquals(expected, history);
+    // build buffered output
+    buffer = builder.toString();
+
+    assertTrue(buffer.contains("StringTag - testing the console sink ..."));
+    assertTrue(buffer.contains("metric1 - -7"));
+    assertTrue(buffer.contains("metric2 - 8675309"));
   }
 
   /**
-   * Check if KafkaSink can report metrics more than once. <br>
+   * Prints to the console with no exceptions. <br>
    */
   @Test
-  public void testProducerOutput() throws Exception {
-    registerMetrics(new Class<?>[] { JvmMetrics.class });
+  public void testConsoleOutput() throws Exception {
+    System.setOut(console);
+    buildConfiguration("%n - %v");
+    registerMetrics(new Class<?>[] { JvmMetrics.class, JunkMetrics.class });
     collectMetricsSample();
-    collectMetricsSample();
-  }
-
-  /**
-   * Substitute the real producer for the mock producer. <br>
-   */
-  private void swapSinks() throws Exception {
-    Class<?> sinkClass = this.kafkaSink.getClass();
-    Field producerField = sinkClass.getDeclaredField("producer");
-    producerField.setAccessible(true);
-    producerField.set(this.kafkaSink, this.producer);
   }
 
   /**
@@ -165,10 +173,7 @@ public class TestKafkaSink {
    */
   private void collectMetricsSample() throws Exception {
     metricsSystem.start();
-    metricsSystem.register("testKafkaSink", "kafka sink for testing", kafkaSink);
-    this.swapSinks();
     metricsSystem.publishMetricsNow();
-    metricsSystem.unregisterSource("testKafkaSink");
     metricsSystem.stop();
   }
 
@@ -178,11 +183,12 @@ public class TestKafkaSink {
     }
   }
 
-  private void buildConfiguration() throws ConfigurationException {
+  private void buildConfiguration(String formatString) throws ConfigurationException, IOException {
     PropertiesConfiguration config = new PropertiesConfiguration();
     config.addProperty("*.period", 10000); // long to avoid automatic sampling.
-    config.addProperty("test.sink.kafka.topic", TEST_TOPIC);
-    config.save(configFile);
+    config.addProperty("test.sink.console.class", ConsoleSink.class.getName());
+    config.addProperty("test.sink.console.format", formatString);
+    config.write(new FileWriter(configFile));
   }
 
 }

@@ -26,7 +26,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Properties;
 
-import org.apache.commons.configuration.SubsetConfiguration;
+import org.apache.commons.configuration2.SubsetConfiguration;
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability;
 import org.apache.hadoop.metrics2.AbstractMetric;

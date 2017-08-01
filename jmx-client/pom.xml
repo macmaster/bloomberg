@@ -6,7 +6,7 @@
 	<version>0.1</version>
 
 	<properties>
-		<hadoop.version>2.7.3</hadoop.version>
+		<hadoop.version>3.0.0-beta1-SNAPSHOT</hadoop.version>
 		<hbase.version>3.0.0-SNAPSHOT</hbase.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
