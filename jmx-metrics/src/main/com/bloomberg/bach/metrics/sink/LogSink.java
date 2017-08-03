@@ -86,25 +86,24 @@ public class LogSink implements MetricsSink, Closeable {
     String line = "";
 
     // compile tags.
-    tags.append(String.format("TAGS:"));
+    tags.append(String.format("TAGS:%n"));
     for (MetricsTag tag : record.tags()) {
-      line = replaceMetricString(format,
-          tag.name(), tag.description(), tag.value());
-      tags.append(String.format("%n%s%s", prefix, line));
+      line = replaceMetricString(format, tag.name(), tag.description(), tag.value());
+      tags.append(String.format("%s%s%n", prefix, line));
     }
 
     // compile metrics.
-    metrics.append(String.format("METRICS:"));
+    metrics.append(String.format("METRICS:%n"));
     for (AbstractMetric metric : record.metrics()) {
-      line = replaceMetricString(format,
-          metric.name(), metric.description(), metric.value().toString());
-      metrics.append(String.format("%n%s%s", prefix, line));
+      line = replaceMetricString(format, metric.name(), metric.description(), metric.value().toString());
+      metrics.append(String.format("%s%s%n", prefix, line));
     }
 
     // print log.
-    log("%s: %s", record.name(), new Date(record.timestamp()));
-    log(tags.toString());
-    log(metrics.toString());
+    StringBuilder output = new StringBuilder();
+    String header = String.format("%s (%s)%n", record.name(), new Date(record.timestamp()));
+    output.append(header).append(tags.toString()).append(metrics.toString());
+    log(output.toString());
   }
 
   /**
@@ -114,8 +113,7 @@ public class LogSink implements MetricsSink, Closeable {
    * %d = description <br>
    * %v = value <br>
    */
-  private String replaceMetricString(
-      String formatString, String name, String description, String value) {
+  private String replaceMetricString(String formatString, String name, String description, String value) {
     String output = formatString;
     output = output.replaceAll("%n", Matcher.quoteReplacement(name));
     output = output.replaceAll("%d", Matcher.quoteReplacement(description));

@@ -84,7 +84,7 @@ public class KafkaSink implements MetricsSink, Closeable {
 
   @Override
   public void flush() {
-    producer.flush();
+    // producer.flush();
   }
 
   @Override
