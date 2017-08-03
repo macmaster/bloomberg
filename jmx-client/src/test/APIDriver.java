@@ -24,6 +24,7 @@ import org.junit.Test;
 import com.bloomberg.bach.hbase.Location;
 import com.bloomberg.bach.hbase.LocationTable;
 import com.bloomberg.bach.hdfs.HDFSFile;
+import com.google.re2j.Pattern;
 
 /**
  * @author Ronald Macmaster
@@ -61,6 +62,8 @@ public class APIDriver {
         testLocationTableGet();
       } else if (command.equals("print")) {
         printMBeans();
+      } else if (command.equals("regex")) {
+        testRegex();
       }
     }
   }
@@ -222,4 +225,11 @@ public class APIDriver {
   //    }
   //  }
 
+  private void testRegex(){
+    String input = "ZOOKEEPER";
+    String patternString = "ZOOKEEPER|CLIENT";
+    Pattern pattern = Pattern.compile(patternString);
+    System.out.format("%s matches %s: %s", input, patternString, pattern.matches(input));
+  } 
+  
 }
