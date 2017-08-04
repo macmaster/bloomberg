@@ -29,9 +29,9 @@ public class BachMetricsContext {
   }
 
   private BachMetricsContext() {
-    try{
+    try {
       DefaultMetricsSystem.initialize("client");
-    } catch (NoClassDefFoundError error){
+    } catch (NoClassDefFoundError error) {
       System.err.println("Hadoop Libraries not loaded.");
       System.err.println("Could not load DefaultMetricsSystem class.");
       System.err.println("Continuing anyway...");
