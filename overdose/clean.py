@@ -10,11 +10,11 @@ import pandas as pd
 import numpy as np
 import scipy as sp
 
-import happybase as hbase
-
 data = pd.read_csv("overdose.csv")
+print data.columns
 
-hostname = "10.0.100.11"
-connection = hbase.Connection(hostname)
-print "Connection to " + hostname + " established!"
+for col in data.columns:
+    data[col] = data[col].astype(str).str.replace(",", ";")
+    print data[col].head()
 
+data.to_csv("clean.csv")
