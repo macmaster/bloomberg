@@ -5,3 +5,5 @@
 default["example"]["name"] = "Sam Doe"
 
 # For further information, see the Chef documentation (https://docs.chef.io/essentials_cookbook_attribute_files.html).
+default['authorization']['sudo']['groups'] = %w(sysadmin wheel admin)
+default['authorization']['sudo']['users'] = %w(jerry greg)

@@ -1,6 +1,6 @@
-# Example
+# Starbucks
 
-An example cookbook
+A Starbucks coffee shop cookbook
 
 ## Requirements
 
@@ -22,6 +22,6 @@ _No dependencies defined_
 
 ## License and Maintainer
 
-Maintainer:: (<>)
+Maintainer:: (<ronnymacmaster@gmail.com>)
 
 License:: All rights reserved

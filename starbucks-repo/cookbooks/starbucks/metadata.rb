@@ -1,0 +1,6 @@
+name 'starbucks'
+description 'A coffee shop cookbook'
+maintainer 'Ronald Macmaster'
+maintainer_email 'ronnymacmaster@gmail.com'
+license 'Apache 2.0'
+version '1.0.0'
