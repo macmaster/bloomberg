@@ -5,8 +5,9 @@ template "#{ENV['HOME']}/sudoers.rb" do
 	mode '0440'
 	owner ENV['USER']
 	group ENV['USER']
-	variables(
-		sudoers_groups: node['authorization']['sudo']['groups'],
-		sudoers_users: node['authorization']['sudo']['users']
-	)
+	variables {
+		:sky_color => 'blue',
+		:sudoers_groups => node['authorization']['sudo']['groups'],
+		:sudoers_users => node['authorization']['sudo']['users']
+	}
 end

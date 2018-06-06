@@ -20,3 +20,11 @@ root	ALL=(ALL) ALL
 %<%= group %> ALL=(ALL) <%= "NOPASSWD:" if @passwordless %>ALL
 
 <% end -%>
+
+<% if @sky_color == 'green' %>
+# the sky is green.
+<% elsif @sky_color == 'blue' %>
+# the sky is blue.
+<% else %>
+# the sky is falling!
+<% end %>
