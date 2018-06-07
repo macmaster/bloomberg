@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 ARGS=()
 while [[ $# -gt 0 ]]; do
   case $1 in
@@ -7,12 +9,20 @@ while [[ $# -gt 0 ]]; do
       echo "verbose"
       shift
       ;;
+    -a|--admin)
+      admin=$2
+      shift; shift
+      ;;
     -f|--file)
       csv=$2
       shift; shift
       ;;
     -c|--columns)
       columns=$2
+      shift; shift
+      ;;
+    -u|--user)
+      user=$2
       shift; shift
       ;;
     *)
@@ -29,6 +39,12 @@ columns=${columns-$(head -n1 $csv | sed -e 's/^,//')}
 
 echo "csv: $csv"
 echo "columns: $columns"
+
+if [[ -n $admin && -n $user ]]; then
+  sudo -u $admin hbase shell <<<"
+    grant '$user', 'RWCXA'
+  "
+fi
 
 # create the hbase table
 hbase shell <<<"
